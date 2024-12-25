@@ -3,7 +3,11 @@ import { getCellInfo } from './getCellInfo.js';
 let highlightedCell = null;
 
 
-export function MouseMove(camera, raycaster, mouse, event, scene, VerticalPartitionCount, HorisontalPartitionCount,  length , height, depth) {
+export function MouseMove(camera, raycaster, mouse, event, scene,  length , height, depth) {
+    
+    let HorisontalPartitionCount = localStorage.getItem('HorisontalPartitionCount')
+    let VerticalPartitionCount = localStorage.getItem('VerticalPartitionCount')
+
     // Нормализуем координаты мыши
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -11,8 +15,11 @@ export function MouseMove(camera, raycaster, mouse, event, scene, VerticalPartit
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(scene.children);
     if (intersects.length > 0) {
+       
         const intersected = intersects[0];
-        const cellInfo = getCellInfo(intersected, VerticalPartitionCount, HorisontalPartitionCount,  length , height);
+        
+       
+        const cellInfo = getCellInfo(intersected,  length , height);
         if (cellInfo) {
             highlightCell(cellInfo, scene, depth);
         }
@@ -24,9 +31,9 @@ export function MouseMove(camera, raycaster, mouse, event, scene, VerticalPartit
 
 function highlightCell({ cellX, cellY, cellWidth, cellHeight }, scene, depth) {
     // Если ячейка уже подсвечена, не нужно ничего делать
-    if (highlightedCell && highlightedCell.cellX === cellX && highlightedCell.cellY === cellY) {
-        return;
-    }
+    // if (highlightedCell && highlightedCell.cellX === cellX && highlightedCell.cellY === cellY) {
+    //     return;
+    // }
 
     // Удаляем предыдущее выделение
     removeHighlight(scene);

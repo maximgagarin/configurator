@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import{scene,  light, camera, renderer, setup, textureMaterial, textureMaterial2, textureMaterial3} from './scene.js'
+import{scene,   camera, renderer, setup, textureMaterial, textureMaterial2, textureMaterial3} from './scene.js'
 import { MouseMove } from './MouseMove.js';
 import { getCellInfo } from './getCellInfo.js';
 import { addOutline } from './addOutline.js';
@@ -10,9 +10,13 @@ const controls = setup()
 
 
 
+
+
 const modalElement = document.getElementById('Modal');
 const modalInstance = new bootstrap.Modal(modalElement);
 
+const horisontalCountInput = document.getElementById('horisontalCountInput');
+const verticalCountInput = document.getElementById('verticalCountInput');
 
 const lengthInput = document.getElementById('length');
 const heightInput = document.getElementById('height');
@@ -22,9 +26,23 @@ lengthInput.addEventListener('input', onInputChange);
 heightInput.addEventListener('input', onInputChange);
 depthInput.addEventListener('input', onInputChange);
 
+horisontalCountInput.addEventListener('input', onInputChange);
+verticalCountInput.addEventListener('input', onInputChange);
+
+
 let length = parseFloat(lengthInput.value) || 1;
 let height = parseFloat(heightInput.value) || 1;
 let depth = parseFloat(depthInput.value) || 1;
+
+let HorisontalPartitionCount = parseFloat(horisontalCountInput.value);
+let VerticalPartitionCount = parseFloat(verticalCountInput.value);
+
+localStorage.setItem('HorisontalPartitionCount', HorisontalPartitionCount)
+localStorage.setItem('VerticalPartitionCount', VerticalPartitionCount)
+
+
+
+
 
 
 const drawerGroup = new THREE.Group()
@@ -33,20 +51,16 @@ let allDrawers = {}
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const doors = {}
-const HorisontalPartitionCount = 3;
-const VerticalPartitionCount = 3;
+
 let panelGroup = new THREE.Group(); 
 let doorsGroup = new THREE.Group(); 
 let HorisontalPartitionGroup = new THREE.Group(); 
 let VerticalPartitionGroup = new THREE.Group(); 
 scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 
-
-
-function onInputChange() {
-    length = parseFloat(lengthInput.value);
-    height = parseFloat(heightInput.value);
-    depth = parseFloat(depthInput.value);
+function panelBuilder(length, height ,depth){
+    let HorisontalPartitionCount = localStorage.getItem('HorisontalPartitionCount')
+    let VerticalPartitionCount = localStorage.getItem('VerticalPartitionCount')
     let widthCell = length/ VerticalPartitionCount
     localStorage.setItem('wcell', widthCell);
     scene.remove(panelGroup);
@@ -80,7 +94,6 @@ function onInputChange() {
 
    
     panelGroup.add(panelleft, panelright, paneltop, panelbottom, panelback);
-
     HorisontalPartitionGroup.clear();
     for (let y = 1; y < HorisontalPartitionCount; y++) {
         const yLevel = (y * height) / HorisontalPartitionCount;
@@ -114,6 +127,20 @@ function onInputChange() {
     updateDrawers()
 }
 
+function onInputChange() {
+    length = parseFloat(lengthInput.value);
+    height = parseFloat(heightInput.value);
+    depth = parseFloat(depthInput.value);
+    HorisontalPartitionCount = parseFloat(horisontalCountInput.value);
+    VerticalPartitionCount = parseFloat(verticalCountInput.value);
+
+    localStorage.HorisontalPartitionCount = HorisontalPartitionCount
+    localStorage.VerticalPartitionCount = VerticalPartitionCount
+    panelBuilder(length, height, depth )
+    // const target = new THREE.Vector3(7, height/2, 5);
+    // controls.target.copy(target);
+}
+
 
 
 window.addEventListener('click', event =>{
@@ -123,7 +150,7 @@ window.addEventListener('click', event =>{
     const intersects = raycaster.intersectObjects(scene.children);
     if (intersects.length > 0) {
         const intersected = intersects[0];
-        const cellInfo = getCellInfo(intersected, VerticalPartitionCount, HorisontalPartitionCount,  length , height)      
+        const cellInfo = getCellInfo(intersected,   length , height)      
         if (cellInfo) {
             addDrawer(cellInfo);
         }
@@ -133,7 +160,8 @@ window.addEventListener('click', event =>{
 })
 
 // Слушаем движение мыши
-window.addEventListener('mousemove', (event) => MouseMove(camera, raycaster, mouse, event, scene, VerticalPartitionCount, HorisontalPartitionCount, length , height, depth));
+window.addEventListener('mousemove', (event) => MouseMove(camera, raycaster, mouse, event, scene,
+      length , height, depth));
 
 
 function addDoor({ cellX, cellY, cellWidth, cellHeight }){  
@@ -271,11 +299,11 @@ function addDrawer({ cellX, cellY, cellWidth, cellHeight }){
         mesh.add(line); // Добавляем контур в меш
     };
 
-    addOutline(frontpanel);
-    addOutline(leftpanel);
-    addOutline(rightpanel);
-    addOutline(bottompanel);
-    addOutline(backpanel);
+    // addOutline(frontpanel);
+    // addOutline(leftpanel);
+    // addOutline(rightpanel);
+    // addOutline(bottompanel);
+    // addOutline(backpanel);
 
     frontpanel.position.set(
         (cellX + 0.5) * cellWidth, 
@@ -311,7 +339,7 @@ onInputChange()
 function animate() {
     requestAnimationFrame(animate);
    
-    controls.update();
+    // controls.update();
    
     renderer.render(scene, camera);
 }
