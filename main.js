@@ -41,7 +41,8 @@ localStorage.setItem('HorisontalPartitionCount', HorisontalPartitionCount)
 localStorage.setItem('VerticalPartitionCount', VerticalPartitionCount)
 
 
-
+const CellGroup = new THREE.Group();
+    scene.add(CellGroup);
 
 
 
@@ -59,8 +60,15 @@ let VerticalPartitionGroup = new THREE.Group();
 scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 
 function panelBuilder(length, height ,depth){
+    
     let HorisontalPartitionCount = localStorage.getItem('HorisontalPartitionCount')
     let VerticalPartitionCount = localStorage.getItem('VerticalPartitionCount')
+
+
+     const cellWidth = length / VerticalPartitionCount;
+     const cellHeight = height / HorisontalPartitionCount;
+
+
     let widthCell = length/ VerticalPartitionCount
     localStorage.setItem('wcell', widthCell);
     scene.remove(panelGroup);
@@ -92,6 +100,7 @@ function panelBuilder(length, height ,depth){
     addOutline(panelright)
     addOutline(paneltop)
 
+    CellGroup.clear()
    
     panelGroup.add(panelleft, panelright, paneltop, panelbottom, panelback);
     HorisontalPartitionGroup.clear();
@@ -119,10 +128,26 @@ function panelBuilder(length, height ,depth){
         vertPartition.position.set(xPos, height / 2, depth / 2);
         VerticalPartitionGroup.add(vertPartition);
     }
-
     scene.add(panelGroup);
     scene.add(HorisontalPartitionGroup);
     scene.add(VerticalPartitionGroup);
+
+    
+    for (let i = 0; i < VerticalPartitionCount; i++) {
+      for (let j = 0; j < HorisontalPartitionCount; j++) {
+        const transparentCube = new THREE.Mesh(
+          new THREE.BoxGeometry(cellWidth, cellHeight, depth),
+          new THREE.MeshBasicMaterial({
+            color: 'green',
+            transparent: true,
+            opacity: 0,
+          })
+        );
+        transparentCube.position.set((i + 0.5) * cellWidth, (j + 0.5) * cellHeight, depth/2);
+        CellGroup.add(transparentCube);
+      }
+    }
+
     updateDoors();
     updateDrawers()
 }
@@ -137,17 +162,21 @@ function onInputChange() {
     localStorage.HorisontalPartitionCount = HorisontalPartitionCount
     localStorage.VerticalPartitionCount = VerticalPartitionCount
     panelBuilder(length, height, depth )
-    // const target = new THREE.Vector3(7, height/2, 5);
-    // controls.target.copy(target);
+
+    const target = new THREE.Vector3(7, height/2, 5);
+    controls.target.copy(target);
 }
+
+const canvas = renderer.domElement; 
 
 
 
 window.addEventListener('click', event =>{
+    const rect = canvas.getBoundingClientRect();
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(scene.children);
+    const intersects = raycaster.intersectObjects(CellGroup.children);
     if (intersects.length > 0) {
         const intersected = intersects[0];
         const cellInfo = getCellInfo(intersected,   length , height)      
@@ -160,8 +189,31 @@ window.addEventListener('click', event =>{
 })
 
 // Слушаем движение мыши
-window.addEventListener('mousemove', (event) => MouseMove(camera, raycaster, mouse, event, scene,
-      length , height, depth));
+// window.addEventListener('mousemove', (event) => MouseMove(camera, raycaster, mouse, event, scene,
+//       length , height, depth));
+
+
+window.addEventListener('mousemove', (event ) => {
+    // Нормализация координат мыши
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(CellGroup.children);
+  
+    // Сбрасываем все прозрачные кубы в исходное состояние
+    CellGroup.children.forEach((cube) => {
+      cube.material.color.set('green');
+      cube.material.opacity = 0;
+    });
+  
+    // Если есть пересечение, изменяем параметры пересекаемого объекта
+    if (intersects.length > 0) {
+      const intersected = intersects[0].object;
+      intersected.material.color.set('green');
+      intersected.material.opacity = 0.2;
+    }
+  });
 
 
 function addDoor({ cellX, cellY, cellWidth, cellHeight }){  
@@ -339,7 +391,7 @@ onInputChange()
 function animate() {
     requestAnimationFrame(animate);
    
-    // controls.update();
+     controls.update();
    
     renderer.render(scene, camera);
 }
