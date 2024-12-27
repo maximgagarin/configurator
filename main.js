@@ -6,7 +6,7 @@ import { getCellInfo } from './getCellInfo.js';
 import { addOutline } from './addOutline.js';
 import { modalInstance } from './controls.js';
 import { config } from './config.js';
-import { addDrawer , openAllDrawers, updateDrawers} from './addDrawer.js';
+import { addDrawer , openAllDrawers, updateDrawers, closeAllDrawers} from './addDrawer.js';
 import { addDoor, updateDoors , openAllDoors} from './doors.js';
 import { selectVal } from './controls.js';
 import { searchObjectByCellInfo } from './funk.js';
@@ -39,6 +39,9 @@ openDoorsButton.addEventListener('click', () => openAllDoors());
 const openDrawersButton = document.getElementById('openDrawersButton');
 openDrawersButton.addEventListener('click', openAllDrawers);
 
+const closeDrawersButton = document.getElementById('closeDrawersButton');
+closeDrawersButton.addEventListener('click', closeAllDrawers);
+
 
 
 
@@ -67,17 +70,17 @@ function panelBuilder(){
     const cellHeight = config.cellHeight;
     scene.remove(panelGroup);
     panelGroup = new THREE.Group();
-    const geometry = new THREE.BoxGeometry(0.2, height, depth);
+    const geometry = new THREE.BoxGeometry(0.1, height-0.1, depth);
     const paneltop = new THREE.Mesh(
-        new THREE.BoxGeometry(length+0.2, 0.2, depth),
+        new THREE.BoxGeometry(length+0.1, 0.1, depth),
         textureMaterial
     );
     const panelbottom = new THREE.Mesh(
-        new THREE.BoxGeometry(length+0.2, 0.2, depth),
+        new THREE.BoxGeometry(length+0.1, 0.1, depth),
         textureMaterial
     );
     const panelback = new THREE.Mesh(
-        new THREE.BoxGeometry(length+0.2, height, 0.2),
+        new THREE.BoxGeometry(length+0.2, height, 0.05),
         new THREE.MeshStandardMaterial({color: 'white'})
     );
     paneltop.position.set(length / 2, height, depth / 2);
@@ -86,13 +89,13 @@ function panelBuilder(){
     const panelright = new THREE.Mesh(geometry, textureMaterial);
     panelleft.position.set(0, height / 2, depth / 2);
     panelright.position.set(length, height / 2, depth / 2);
-    panelback.position.set(length/2, height/2, 0);
+    panelback.position.set(length/2, height/2, -0.025);
 
 
-    addOutline(panelbottom)
-    addOutline(panelleft)
-    addOutline(panelright)
-    addOutline(paneltop)
+    // addOutline(panelbottom)
+    // addOutline(panelleft)
+    // addOutline(panelright)
+    // addOutline(paneltop)
 
     CellGroup.clear()
    
@@ -103,7 +106,7 @@ function panelBuilder(){
         for (let x = 0; x < VerticalPartitionCount; x++) {
             const xCenter = (x + 0.5) * (length / VerticalPartitionCount);
             const horizontalPartition = new THREE.Mesh(
-                new THREE.BoxGeometry(length / VerticalPartitionCount, 0.2, depth),
+                new THREE.BoxGeometry(length / VerticalPartitionCount -0.12, 0.1, depth),
                 textureMaterial
             );
             addOutline(horizontalPartition)
@@ -115,7 +118,7 @@ function panelBuilder(){
     for (let x = 1; x < VerticalPartitionCount; x++) {
         const xPos = (x * length) / VerticalPartitionCount;
         const vertPartition = new THREE.Mesh(
-            new THREE.BoxGeometry(0.2, height, depth),
+            new THREE.BoxGeometry(0.1, height-0.1, depth),
             textureMaterial
         );
         addOutline(vertPartition)
@@ -173,6 +176,28 @@ function onInputChange() {
 
 let cellInfo
 
+window.addEventListener('mousemove', (event ) => {
+  // Нормализация координат мыши
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(CellGroup.children);
+
+  // Сбрасываем все прозрачные кубы в исходное состояние
+  CellGroup.children.forEach((cube) => {
+    cube.material.color.set('green');
+    cube.material.opacity = 0;
+  });
+
+  // Если есть пересечение, изменяем параметры пересекаемого объекта
+  if (intersects.length > 0) {
+    const intersected = intersects[0].object;
+    intersected.material.color.set('green');
+    intersected.material.opacity = 0.2;
+  }
+});
+
 window.addEventListener('click', event =>{
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -181,13 +206,10 @@ window.addEventListener('click', event =>{
     if (intersects.length > 0) {
         const intersected = intersects[0];
         cellInfo = getCellInfo(intersected,   length , height)  
-          
+         
         if (cellInfo) {
            searchObjectByCellInfo(cellInfo)
-          modalInstance.show()
-         //addDrawer(cellInfo)
-            
-           // addDrawer(cellInfo);
+          modalInstance.show() 
         }
     } else {
        // console.log('123');
@@ -195,51 +217,47 @@ window.addEventListener('click', event =>{
 })
 
 
-window.addEventListener('mousemove', (event ) => {
-    // Нормализация координат мыши
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-  
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(CellGroup.children);
-  
-    // Сбрасываем все прозрачные кубы в исходное состояние
-    CellGroup.children.forEach((cube) => {
-      cube.material.color.set('green');
-      cube.material.opacity = 0;
-    });
-  
-    // Если есть пересечение, изменяем параметры пересекаемого объекта
-    if (intersects.length > 0) {
-      const intersected = intersects[0].object;
-      intersected.material.color.set('green');
-      intersected.material.opacity = 0.2;
-    }
-  });
+function addToCell() {
+  let selectValue = parseInt(selectVal.value); 
+  const Key = `${cellInfo.cellX}-${cellInfo.cellY}`;
 
+  switch (selectValue) {
+      case 1: // Добавляем дверь
+          modalInstance.hide();
+          const existingDrawer = allDrawers[Key]; // Проверяем, есть ли ящик в этой ячейке
+          if (existingDrawer) {
+              scene.remove(existingDrawer.group); // Удаляем ящик
+              delete allDrawers[Key]; // Удаляем ящик из объекта allDrawers
+          }
+          addDoor(cellInfo); // Добавляем дверь
+          break;
 
-function addToCell(){
-    let selectValue = parseInt(selectVal.value); 
-    const doorKey = `${cellInfo.cellX}-${cellInfo.cellY}`
-    switch (selectValue){
-        case 1:
-        modalInstance.hide()
-        addDoor(cellInfo)
-        break; 
-    case 2: 
-        modalInstance.hide()
-       addDrawer(cellInfo)
-        break; 
-    
-    case 4:
-        modalInstance.hide()
-        const door = doors[doorKey]
-        const drawer = allDrawers[doorKey]
-        scene.remove(drawer.group)
-        scene.remove(door.mesh)
-        delete doors[doorKey]
-        delete allDrawers[doorKey]
-    }
+      case 2: // Добавляем ящик
+          modalInstance.hide();
+          const existingDoor = doors[Key]; // Проверяем, есть ли дверь в этой ячейке
+          if (existingDoor) {
+              scene.remove(existingDoor.mesh); // Удаляем дверь
+              delete doors[Key]; // Удаляем дверь из объекта doors
+          }
+          addDrawer(cellInfo); // Добавляем ящик
+          break;
+
+      case 4: // Удаляем ящик и/или дверь
+          modalInstance.hide();
+          const drawer = allDrawers[Key];
+          const door = doors[Key];
+
+          if (drawer) {
+              scene.remove(drawer.group); // Удаляем ящик
+              delete allDrawers[Key]; // Удаляем ящик из объекта allDrawers
+          }
+
+          if (door) {
+              scene.remove(door.mesh); // Удаляем дверь
+              delete doors[Key]; // Удаляем дверь из объекта doors
+          }
+          break;
+  }
 }
 
 onInputChange()

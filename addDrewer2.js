@@ -12,53 +12,49 @@ export function addDrawer({ cellX, cellY }){
     const depth = config.depth
 
     const drawerKey = `${cellX}-${cellY}`;
-    const frontpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, cellHeight, 0.2), textureMaterial)
-    const leftpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, cellHeight-0.4, depth-0.2), textureMaterial)
-    const rightpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, cellHeight-0.4, depth-0.2), textureMaterial)
-    const bottompanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth-0.4, 0.2, depth-0.2), textureMaterial);
-    const backpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth-0.2, cellHeight-0.4, 0.2), textureMaterial);
-    const addOutline = (mesh) => {
-        const edges = new THREE.EdgesGeometry(mesh.geometry); // Создаем геометрию границ
-        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 })); // Линии для отображения
-        mesh.add(line); // Добавляем контур в меш
-    };
 
+    let positionY = cellHeight/3
 
-    const drawerGroup = new THREE.Group(); // Создаем отдельную группу для ящика
+    
+        const frontpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, cellHeight/3, 0.2), textureMaterial)
+        const leftpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, cellHeight-0.4/3, depth-0.2), textureMaterial)
+        const rightpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, cellHeight-0.4/3, depth-0.2), textureMaterial)
+        const bottompanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth-0.4, 0.2, depth-0.2), textureMaterial);
+        const backpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth-0.2, cellHeight-0.4/3, 0.2), textureMaterial);
 
-    frontpanel.position.set(
-        (cellX + 0.5) * cellWidth, 
-        (cellY + 0.5) * cellHeight, 
-        depth
-    );
-    // Позиция левой панели
-    leftpanel.position.set(
-        cellX * cellWidth+0.2, // Левый край ячейки
-        (cellY + 0.5) * cellHeight-0.1, 
-        depth / 2
-    );
-    // Позиция правой панели
-    rightpanel.position.set(
-        (cellX + 1) * cellWidth -0.2, // Правый край ячейки
-        (cellY + 0.5) * cellHeight-0.1, 
-        depth / 2
-    );
-    bottompanel.position.set(
-        (cellX + 0.5) * cellWidth, // Центр ячейки по X
-        cellY * cellHeight + 0.2,        // Нижний край ячейки по Y
-        depth / 2                  // Глубина по Z
-    );
-    backpanel.position.set(
-        (cellX + 0.5) * cellWidth, 
-        (cellY + 0.5) * cellHeight-0.1, 
-        0.2 // Задняя часть ячейки по Z
-    );
-    drawerGroup.add(frontpanel, leftpanel , rightpanel, bottompanel, backpanel);
-    allDrawers[drawerKey] = {group: drawerGroup, frontpanel:frontpanel, leftpanel:leftpanel, rightpanel:rightpanel, bottompanel:bottompanel, backpanel:backpanel, cellX, cellY}
+        const drawerGroup = new THREE.Group(); // Создаем отдельную группу для ящика
 
-    scene.add(drawerGroup);
-
-    // countGroup++
+        frontpanel.position.set(
+            (cellX + 0.5) * cellWidth, 
+            (cellY + 0.5) * cellHeight , 
+            depth
+        );
+        // Позиция левой панели
+        leftpanel.position.set(
+            cellX * cellWidth+0.2, // Левый край ячейки
+            (cellY + 0.5) * cellHeight-0.1, 
+            depth / 2
+        );
+        // Позиция правой панели
+        rightpanel.position.set(
+            (cellX + 1) * cellWidth -0.2, // Правый край ячейки
+            (cellY + 0.5) * cellHeight-0.1, 
+            depth / 2
+        );
+        bottompanel.position.set(
+            (cellX + 0.5) * cellWidth, // Центр ячейки по X
+            cellY * cellHeight + 0.2,        // Нижний край ячейки по Y
+            depth / 2                  // Глубина по Z
+        );
+        backpanel.position.set(
+            (cellX + 0.5) * cellWidth, 
+            (cellY + 0.5) * cellHeight-0.1, 
+            0.2 // Задняя часть ячейки по Z
+        );
+        drawerGroup.add(frontpanel, leftpanel , rightpanel, bottompanel, backpanel);
+        allDrawers[drawerKey] = {group: drawerGroup, frontpanel:frontpanel, leftpanel:leftpanel, rightpanel:rightpanel, bottompanel:bottompanel, backpanel:backpanel, cellX, cellY}
+    
+        scene.add(drawerGroup);  
     
 }
 
