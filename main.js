@@ -12,6 +12,7 @@ import { selectVal } from './controls.js';
 import { searchObjectByCellInfo } from './funk.js';
 
 
+
 const controls = setup()
 const canvas = renderer.domElement; 
 
