@@ -55,7 +55,7 @@ export function addDrawer({ cellX, cellY }){
         0 // Задняя часть ячейки по Z
     );
     drawerGroup.add(frontpanel, leftpanel , rightpanel, bottompanel, backpanel);
-    allDrawers[drawerKey] = {frontpanel:frontpanel, leftpanel:leftpanel, rightpanel:rightpanel, bottompanel:bottompanel, backpanel:backpanel, cellX, cellY}
+    allDrawers[drawerKey] = {group: drawerGroup, frontpanel:frontpanel, leftpanel:leftpanel, rightpanel:rightpanel, bottompanel:bottompanel, backpanel:backpanel, cellX, cellY}
 }
 
 export function openAllDrawers(){
@@ -64,6 +64,7 @@ export function openAllDrawers(){
 
 
 export function updateDrawers() {
+
     const cellWidth = config.cellWidth
     const cellHeight = config.cellHeight;
     const depth = config.depth
@@ -116,4 +117,5 @@ export function updateDrawers() {
             0
         );
     }
+    console.log(allDrawers)
 }

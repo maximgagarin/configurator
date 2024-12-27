@@ -37,7 +37,7 @@
     </div> 
   </div>
 <!-- Modal -->
-<div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade modal-right" id="Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -45,18 +45,14 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="objectType" id="radioDoor" value="door" checked>
-                <label class="form-check-label" for="flexRadioDefault1">
-                  Добавить дверь
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="objectType" id="radioDrawer" value="drawer">
-                <label class="form-check-label" for="flexRadioDefault2">
-                  Добавить ящик
-                </label>
-              </div>
+          <select class="form-select" aria-label="Default select example" id="selectCell">
+            <option selected>Open this select menu</option>
+            <option value="1">Дверь</option>
+            <option value="2">Ящик</option>
+            <option value="3">2 Ящика</option>
+            <option value="4">Пусто</option>
+
+          </select>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -74,4 +70,20 @@
   label{
     color: aqua;
   }
+
+  .modal.modal-right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+  overflow-y: auto;
+}
+
+.modal.modal-right .modal-dialog {
+  margin: 0;
+  max-width: 400px; /* Ширина модального окна */
+  height: 100%;
+}
 </style>

@@ -8,7 +8,7 @@ export function getCellInfo(intersected,  length , height) {
     const cellHeight = config.cellHeight
     // Позиция точки пересечения
     const point = intersected.point;
-    console.log(point)
+ //   console.log(point)
     const cellX = Math.floor(point.x / cellWidth);
     const cellY = Math.floor(point.y / cellHeight);
     if (cellX >= 0 && cellX < VerticalPartitionCount && cellY >= 0 && cellY < HorisontalPartitionCount) {

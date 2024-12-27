@@ -1,13 +1,15 @@
 import * as THREE from 'three'
 
-import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse} from './scene.js'
-import { MouseMove } from './MouseMove.js';
+import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse, doors ,allDrawers} from './scene.js'
+
 import { getCellInfo } from './getCellInfo.js';
 import { addOutline } from './addOutline.js';
 import { modalInstance } from './controls.js';
 import { config } from './config.js';
 import { addDrawer , openAllDrawers, updateDrawers} from './addDrawer.js';
 import { addDoor, updateDoors , openAllDoors} from './doors.js';
+import { selectVal } from './controls.js';
+import { searchObjectByCellInfo } from './funk.js';
 
 
 const controls = setup()
@@ -20,7 +22,7 @@ const lengthInput = document.getElementById('length');
 const heightInput = document.getElementById('height');
 const depthInput = document.getElementById('depth');
 const modalButton = document.getElementById('ModalButton');
-const radioDoor = document.getElementById('radioDoor');
+
 
 
 lengthInput.addEventListener('input', onInputChange);
@@ -36,6 +38,9 @@ openDoorsButton.addEventListener('click', () => openAllDoors());
 
 const openDrawersButton = document.getElementById('openDrawersButton');
 openDrawersButton.addEventListener('click', openAllDrawers);
+
+
+
 
 
 let length = parseFloat(lengthInput.value) || 1;
@@ -178,11 +183,14 @@ window.addEventListener('click', event =>{
         cellInfo = getCellInfo(intersected,   length , height)  
           
         if (cellInfo) {
-            modalInstance.show()
+           searchObjectByCellInfo(cellInfo)
+          modalInstance.show()
+         //addDrawer(cellInfo)
+            
            // addDrawer(cellInfo);
         }
     } else {
-        console.log('123');
+       // console.log('123');
     }
 })
 
@@ -211,13 +219,26 @@ window.addEventListener('mousemove', (event ) => {
 
 
 function addToCell(){
-    if (radioDoor.checked){
+    let selectValue = parseInt(selectVal.value); 
+    const doorKey = `${cellInfo.cellX}-${cellInfo.cellY}`
+    switch (selectValue){
+        case 1:
         modalInstance.hide()
         addDoor(cellInfo)
-    } else {
+        break; 
+    case 2: 
         modalInstance.hide()
-
-        addDrawer(cellInfo)
+       addDrawer(cellInfo)
+        break; 
+    
+    case 4:
+        modalInstance.hide()
+        const door = doors[doorKey]
+        const drawer = allDrawers[doorKey]
+        scene.remove(drawer.group)
+        scene.remove(door.mesh)
+        delete doors[doorKey]
+        delete allDrawers[doorKey]
     }
 }
 

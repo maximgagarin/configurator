@@ -21,6 +21,7 @@ export function addDoor({ cellX, cellY }){
     );
     scene.add(door);
     doors[doorKey] = { mesh: door, cellX, cellY }; // Сохраняем дверь
+   // console.log(doors)
 }
 
 export function updateDoors() {
