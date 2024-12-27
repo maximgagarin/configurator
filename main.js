@@ -19,13 +19,23 @@ const verticalCountInput = document.getElementById('verticalCountInput');
 const lengthInput = document.getElementById('length');
 const heightInput = document.getElementById('height');
 const depthInput = document.getElementById('depth');
+const modalButton = document.getElementById('ModalButton');
+const radioDoor = document.getElementById('radioDoor');
+
 
 lengthInput.addEventListener('input', onInputChange);
 heightInput.addEventListener('input', onInputChange);
 depthInput.addEventListener('input', onInputChange);
+modalButton.addEventListener('click', addToCell )
 
 horisontalCountInput.addEventListener('input', onInputChange);
 verticalCountInput.addEventListener('input', onInputChange);
+
+const openDoorsButton = document.getElementById('openDoorsButton');
+openDoorsButton.addEventListener('click', () => openAllDoors());
+
+const openDrawersButton = document.getElementById('openDrawersButton');
+openDrawersButton.addEventListener('click', openAllDrawers);
 
 
 let length = parseFloat(lengthInput.value) || 1;
@@ -35,10 +45,6 @@ let depth = parseFloat(depthInput.value) || 1;
 
 let HorisontalPartitionCount = parseFloat(horisontalCountInput.value);
 let VerticalPartitionCount = parseFloat(verticalCountInput.value);
-
-localStorage.setItem('HorisontalPartitionCount', HorisontalPartitionCount)
-localStorage.setItem('VerticalPartitionCount', VerticalPartitionCount)
-
 
 const CellGroup = new THREE.Group();
 scene.add(CellGroup);
@@ -52,13 +58,8 @@ scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 function panelBuilder(){
     let HorisontalPartitionCount = config.HorisontalPartitionCount
     let VerticalPartitionCount = config.VerticalPartitionCount
-
-
     const cellWidth = config.cellWidth
     const cellHeight = config.cellHeight;
-
-
- 
     scene.remove(panelGroup);
     panelGroup = new THREE.Group();
     const geometry = new THREE.BoxGeometry(0.2, height, depth);
@@ -145,15 +146,8 @@ function onInputChange() {
     height = parseFloat(heightInput.value);
     depth = parseFloat(depthInput.value);
 
-    
-
-    console.log(config)
-
     HorisontalPartitionCount = parseFloat(horisontalCountInput.value);
     VerticalPartitionCount = parseFloat(verticalCountInput.value);
-
-    localStorage.HorisontalPartitionCount = HorisontalPartitionCount
-    localStorage.VerticalPartitionCount = VerticalPartitionCount
 
     const cellWidth = length / VerticalPartitionCount;
     const cellHeight = height / HorisontalPartitionCount;
@@ -166,26 +160,26 @@ function onInputChange() {
     config.cellWidth = cellWidth
     config.cellHeight = cellHeight
 
-
-
     panelBuilder( )
 
     const target = new THREE.Vector3(7, height/2, 5);
     controls.target.copy(target); //камера смотрит на target
 }
 
+let cellInfo
+
 window.addEventListener('click', event =>{
-  
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(CellGroup.children);
     if (intersects.length > 0) {
         const intersected = intersects[0];
-        const cellInfo = getCellInfo(intersected,   length , height)      
+        cellInfo = getCellInfo(intersected,   length , height)  
+          
         if (cellInfo) {
-           // modalInstance.show()
-            addDoor(cellInfo);
+            modalInstance.show()
+           // addDrawer(cellInfo);
         }
     } else {
         console.log('123');
@@ -215,12 +209,17 @@ window.addEventListener('mousemove', (event ) => {
     }
   });
 
-const openDoorsButton = document.getElementById('openDoorsButton');
-openDoorsButton.addEventListener('click', () => openAllDoors());
 
-const openDrawersButton = document.getElementById('openDrawersButton');
-openDrawersButton.addEventListener('click', openAllDrawers);
+function addToCell(){
+    if (radioDoor.checked){
+        modalInstance.hide()
+        addDoor(cellInfo)
+    } else {
+        modalInstance.hide()
 
+        addDrawer(cellInfo)
+    }
+}
 
 onInputChange()
 
