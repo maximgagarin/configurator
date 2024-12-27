@@ -6,10 +6,19 @@ export const light = new THREE.AmbientLight('white', 0.5);
 export const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
 export const renderer = new THREE.WebGLRenderer({ antialias: true });
 const controls = new OrbitControls(camera, renderer.domElement)
+export const raycaster = new THREE.Raycaster();
+export const mouse = new THREE.Vector2();
 
 const texture = new THREE.TextureLoader().load('texture/wood.jpg')
 const texture2 = new THREE.TextureLoader().load('texture/wood2.jpg')
 const texture3 = new THREE.TextureLoader().load('texture/wood4.jpg')
+
+export const drawerGroup = new THREE.Group()
+scene.add(drawerGroup)
+
+export let allDrawers = {}
+export const doors = {}
+
 
 export const textureMaterial = new THREE.MeshBasicMaterial({map: texture})
 export const textureMaterial2 = new THREE.MeshBasicMaterial({map: texture2})

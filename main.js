@@ -1,23 +1,21 @@
 import * as THREE from 'three'
 
-import{scene,   camera, renderer, setup, textureMaterial, textureMaterial2, textureMaterial3} from './scene.js'
+import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse} from './scene.js'
 import { MouseMove } from './MouseMove.js';
 import { getCellInfo } from './getCellInfo.js';
 import { addOutline } from './addOutline.js';
+import { modalInstance } from './controls.js';
+import { config } from './config.js';
+import { addDrawer , openAllDrawers, updateDrawers} from './addDrawer.js';
+import { addDoor, updateDoors , openAllDoors} from './doors.js';
 
 
 const controls = setup()
+const canvas = renderer.domElement; 
 
-
-
-
-
-const modalElement = document.getElementById('Modal');
-const modalInstance = new bootstrap.Modal(modalElement);
 
 const horisontalCountInput = document.getElementById('horisontalCountInput');
 const verticalCountInput = document.getElementById('verticalCountInput');
-
 const lengthInput = document.getElementById('length');
 const heightInput = document.getElementById('height');
 const depthInput = document.getElementById('depth');
@@ -34,6 +32,7 @@ let length = parseFloat(lengthInput.value) || 1;
 let height = parseFloat(heightInput.value) || 1;
 let depth = parseFloat(depthInput.value) || 1;
 
+
 let HorisontalPartitionCount = parseFloat(horisontalCountInput.value);
 let VerticalPartitionCount = parseFloat(verticalCountInput.value);
 
@@ -42,16 +41,7 @@ localStorage.setItem('VerticalPartitionCount', VerticalPartitionCount)
 
 
 const CellGroup = new THREE.Group();
-    scene.add(CellGroup);
-
-
-
-const drawerGroup = new THREE.Group()
-scene.add(drawerGroup)
-let allDrawers = {}
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-const doors = {}
+scene.add(CellGroup);
 
 let panelGroup = new THREE.Group(); 
 let doorsGroup = new THREE.Group(); 
@@ -59,18 +49,16 @@ let HorisontalPartitionGroup = new THREE.Group();
 let VerticalPartitionGroup = new THREE.Group(); 
 scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 
-function panelBuilder(length, height ,depth){
-    
-    let HorisontalPartitionCount = localStorage.getItem('HorisontalPartitionCount')
-    let VerticalPartitionCount = localStorage.getItem('VerticalPartitionCount')
+function panelBuilder(){
+    let HorisontalPartitionCount = config.HorisontalPartitionCount
+    let VerticalPartitionCount = config.VerticalPartitionCount
 
 
-     const cellWidth = length / VerticalPartitionCount;
-     const cellHeight = height / HorisontalPartitionCount;
+    const cellWidth = config.cellWidth
+    const cellHeight = config.cellHeight;
 
 
-    let widthCell = length/ VerticalPartitionCount
-    localStorage.setItem('wcell', widthCell);
+ 
     scene.remove(panelGroup);
     panelGroup = new THREE.Group();
     const geometry = new THREE.BoxGeometry(0.2, height, depth);
@@ -156,23 +144,38 @@ function onInputChange() {
     length = parseFloat(lengthInput.value);
     height = parseFloat(heightInput.value);
     depth = parseFloat(depthInput.value);
+
+    
+
+    console.log(config)
+
     HorisontalPartitionCount = parseFloat(horisontalCountInput.value);
     VerticalPartitionCount = parseFloat(verticalCountInput.value);
 
     localStorage.HorisontalPartitionCount = HorisontalPartitionCount
     localStorage.VerticalPartitionCount = VerticalPartitionCount
-    panelBuilder(length, height, depth )
+
+    const cellWidth = length / VerticalPartitionCount;
+    const cellHeight = height / HorisontalPartitionCount;
+
+    config.length = length
+    config.height = height
+    config.depth = depth
+    config.HorisontalPartitionCount = HorisontalPartitionCount
+    config.VerticalPartitionCount = VerticalPartitionCount 
+    config.cellWidth = cellWidth
+    config.cellHeight = cellHeight
+
+
+
+    panelBuilder( )
 
     const target = new THREE.Vector3(7, height/2, 5);
-    controls.target.copy(target);
+    controls.target.copy(target); //камера смотрит на target
 }
 
-const canvas = renderer.domElement; 
-
-
-
 window.addEventListener('click', event =>{
-    const rect = canvas.getBoundingClientRect();
+  
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
@@ -181,16 +184,13 @@ window.addEventListener('click', event =>{
         const intersected = intersects[0];
         const cellInfo = getCellInfo(intersected,   length , height)      
         if (cellInfo) {
-            addDrawer(cellInfo);
+           // modalInstance.show()
+            addDoor(cellInfo);
         }
     } else {
         console.log('123');
     }
 })
-
-// Слушаем движение мыши
-// window.addEventListener('mousemove', (event) => MouseMove(camera, raycaster, mouse, event, scene,
-//       length , height, depth));
 
 
 window.addEventListener('mousemove', (event ) => {
@@ -215,179 +215,15 @@ window.addEventListener('mousemove', (event ) => {
     }
   });
 
-
-function addDoor({ cellX, cellY, cellWidth, cellHeight }){  
-    const doorKey = `${cellX}-${cellY}`;
-    if (doors[doorKey]) {
-        console.log('Door already exists at:', doorKey);
-        return;
-    }
-    const door = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, cellHeight, 0.2), textureMaterial)
-    addOutline(door)
-    door.position.set(
-        (cellX + 0.5) * cellWidth,
-        (cellY + 0.5) * cellHeight,
-        depth
-    );
-    scene.add(door);
-    doors[doorKey] = { mesh: door, cellX, cellY }; // Сохраняем дверь
-}
-
-
-function updateDoors() {
-    const cellWidth = length / VerticalPartitionCount;
-    const cellHeight = height / HorisontalPartitionCount;
-
-    for (const doorKey in doors) {
-        const { mesh, cellX, cellY } = doors[doorKey];
-        mesh.geometry.dispose(); // Удаляем старую геометрию
-        mesh.geometry = new THREE.BoxGeometry(cellWidth , cellHeight , 0.2); // Новая геометрия
-        // Пересчитываем новую позицию двери
-        mesh.position.set(
-            (cellX + 0.5) * cellWidth,
-            (cellY + 0.5) * cellHeight,
-            depth
-        );
-    }
-}
-
-function updateDrawers() {
-    const cellWidth = length / VerticalPartitionCount;
-    const cellHeight = height / HorisontalPartitionCount;
-
-    for (const drawerKey in allDrawers) {
-        const { frontpanel, leftpanel, rightpanel, bottompanel, backpanel, cellX, cellY } = allDrawers[drawerKey];
-
-        // Обновляем геометрию передней панели
-        frontpanel.geometry.dispose();
-        frontpanel.geometry = new THREE.BoxGeometry(cellWidth, cellHeight, 0.2);
-        frontpanel.position.set(
-            (cellX + 0.5) * cellWidth,
-            (cellY + 0.5) * cellHeight,
-            depth
-        );
-
-        // Обновляем геометрию левой панели
-        leftpanel.geometry.dispose();
-        leftpanel.geometry = new THREE.BoxGeometry(0.2, cellHeight - 0.4, depth);
-        leftpanel.position.set(
-            cellX * cellWidth + 0.2,
-            (cellY + 0.5) * cellHeight - 0.1,
-            depth / 2
-        );
-
-        // Обновляем геометрию правой панели
-        rightpanel.geometry.dispose();
-        rightpanel.geometry = new THREE.BoxGeometry(0.2, cellHeight - 0.4, depth);
-        rightpanel.position.set(
-            (cellX + 1) * cellWidth - 0.2,
-            (cellY + 0.5) * cellHeight - 0.1,
-            depth / 2
-        );
-
-        // Обновляем геометрию нижней панели
-        bottompanel.geometry.dispose();
-        bottompanel.geometry = new THREE.BoxGeometry(cellWidth - 0.4, 0.2, depth);
-        bottompanel.position.set(
-            (cellX + 0.5) * cellWidth,
-            cellY * cellHeight + 0.2,
-            depth / 2
-        );
-
-        // Обновляем геометрию задней панели
-        backpanel.geometry.dispose();
-        backpanel.geometry = new THREE.BoxGeometry(cellWidth - 0.2, cellHeight - 0.4, 0.2);
-        backpanel.position.set(
-            (cellX + 0.5) * cellWidth,
-            (cellY + 0.5) * cellHeight - 0.1,
-            0
-        );
-    }
-}
-
-
-
 const openDoorsButton = document.getElementById('openDoorsButton');
 openDoorsButton.addEventListener('click', () => openAllDoors());
 
 const openDrawersButton = document.getElementById('openDrawersButton');
 openDrawersButton.addEventListener('click', openAllDrawers);
 
-function openAllDoors() {
-    let newWidthCell = localStorage.getItem('wcell')
-    for (const doorKey in doors) {
-        const { mesh, cellX, cellY } = doors[doorKey];
-        let posY = mesh.position.y
-        let posX = mesh.position.x
-        let posZ = mesh.position.z
 
-        // Создаём группу для каждой двери, чтобы изменить точку вращения
-        const doorGroup = new THREE.Group();
-        // Добавляем дверь в группу
-        doorGroup.add(mesh);
-        mesh.position.set(newWidthCell/2, 0, 0); // Смещаем дверь влево относительно группы
-        // Добавляем группу в сцену
-        scene.add(doorGroup);
-        doorGroup.position.set(posX-newWidthCell/2, posY, posZ); 
-        doorGroup.rotation.y = - 45
-    }
-}
-
-function openAllDrawers(){
-    drawerGroup.position.z = depth /2
-}
-
-
-function addDrawer({ cellX, cellY, cellWidth, cellHeight }){ 
-    const drawerKey = `${cellX}-${cellY}`;
-    const frontpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, cellHeight, 0.2), textureMaterial)
-    const leftpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, cellHeight-0.4, depth), textureMaterial)
-    const rightpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, cellHeight-0.4, depth), textureMaterial)
-    const bottompanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth-0.4, 0.2, depth), textureMaterial);
-    const backpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth-0.2, cellHeight-0.4, 0.2), textureMaterial);
-    const addOutline = (mesh) => {
-        const edges = new THREE.EdgesGeometry(mesh.geometry); // Создаем геометрию границ
-        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 })); // Линии для отображения
-        mesh.add(line); // Добавляем контур в меш
-    };
-
-    // addOutline(frontpanel);
-    // addOutline(leftpanel);
-    // addOutline(rightpanel);
-    // addOutline(bottompanel);
-    // addOutline(backpanel);
-
-    frontpanel.position.set(
-        (cellX + 0.5) * cellWidth, 
-        (cellY + 0.5) * cellHeight, 
-        depth
-    );
-    // Позиция левой панели
-    leftpanel.position.set(
-        cellX * cellWidth+0.2, // Левый край ячейки
-        (cellY + 0.5) * cellHeight-0.1, 
-        depth / 2
-    );
-    // Позиция правой панели
-    rightpanel.position.set(
-        (cellX + 1) * cellWidth -0.2, // Правый край ячейки
-        (cellY + 0.5) * cellHeight-0.1, 
-        depth / 2
-    );
-    bottompanel.position.set(
-        (cellX + 0.5) * cellWidth, // Центр ячейки по X
-        cellY * cellHeight + 0.2,        // Нижний край ячейки по Y
-        depth / 2                  // Глубина по Z
-    );
-    backpanel.position.set(
-        (cellX + 0.5) * cellWidth, 
-        (cellY + 0.5) * cellHeight-0.1, 
-        0 // Задняя часть ячейки по Z
-    );
-    drawerGroup.add(frontpanel, leftpanel , rightpanel, bottompanel, backpanel);
-    allDrawers[drawerKey] = {frontpanel:frontpanel, leftpanel:leftpanel, rightpanel:rightpanel, bottompanel:bottompanel, backpanel:backpanel, cellX, cellY}
-}
 onInputChange()
+
 function animate() {
     requestAnimationFrame(animate);
    
