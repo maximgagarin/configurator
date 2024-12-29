@@ -1,15 +1,16 @@
 import * as THREE from 'three'
 
-import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse, doors ,allDrawers} from './scene.js'
+import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse, doors ,allDrawers, drawerGroup} from './scene.js'
 
 import { getCellInfo } from './getCellInfo.js';
 import { addOutline } from './addOutline.js';
 import { modalInstance } from './controls.js';
 import { config } from './config.js';
-import { addDrawer , openAllDrawers, updateDrawers, closeAllDrawers} from './addDrawer.js';
+import { addDrawer , openAllDrawers, updateDrawers, closeAllDrawers, allPanels } from './addDrawer.js';
 import { addDoor, updateDoors , openAllDoors} from './doors.js';
 import { selectVal } from './controls.js';
 import { searchObjectByCellInfo } from './funk.js';
+import { gsap } from 'gsap';
 
 
 
@@ -59,9 +60,17 @@ const CellGroup = new THREE.Group();
 scene.add(CellGroup);
 
 let panelGroup = new THREE.Group(); 
+
+
+
 let doorsGroup = new THREE.Group(); 
 let HorisontalPartitionGroup = new THREE.Group(); 
 let VerticalPartitionGroup = new THREE.Group(); 
+
+
+HorisontalPartitionGroup.castShadow = true
+VerticalPartitionGroup.castShadow = true
+
 scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 
 function panelBuilder(){
@@ -93,14 +102,27 @@ function panelBuilder(){
     panelback.position.set(length/2, height/2, -0.025);
 
 
-    // addOutline(panelbottom)
-    // addOutline(panelleft)
-    // addOutline(panelright)
-    // addOutline(paneltop)
+    addOutline(panelbottom)
+    addOutline(panelleft)
+    addOutline(panelright)
+    addOutline(paneltop)
 
     CellGroup.clear()
+
+    panelleft.castShadow = true
+    panelright.castShadow = true
+    paneltop.castShadow = true
+    panelbottom.castShadow = true
+
+    panelleft.receiveShadow = true
+    panelright.receiveShadow = true
+    paneltop.receiveShadow = true
+    panelbottom.receiveShadow = true
+
+
+    
    
-    panelGroup.add(panelleft, panelright, paneltop, panelbottom, panelback);
+    panelGroup.add(panelleft, panelright, paneltop, panelbottom);
     HorisontalPartitionGroup.clear();
     for (let y = 1; y < HorisontalPartitionCount; y++) {
         const yLevel = (y * height) / HorisontalPartitionCount;
@@ -146,8 +168,9 @@ function panelBuilder(){
       }
     }
 
-    updateDoors();
+    updateDoors()
     updateDrawers()
+  
 }
 
 function onInputChange() {
@@ -198,6 +221,54 @@ window.addEventListener('mousemove', (event ) => {
     intersected.material.opacity = 0.2;
   }
 });
+
+
+window.addEventListener('mousemove', (event) => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(allPanels); // Проверяем панели
+
+    if (intersects.length > 0) {
+        const intersected = intersects[0].object;
+        const parentGroup = intersected.parent; // Находим родительскую группу
+        gsap.to(parentGroup.position, {
+            z: config.depth / 2, // Открываем ящик вперед
+            duration: 0.6,      // Длительность анимации
+            ease: 'power2.out', // Плавность
+        });
+    } else {
+        // Возвращаем панели в исходное положение
+        drawerGroup.children.forEach((group) => {
+            gsap.to(group.position, {
+                z: 0,            // Возвращаем на место
+                duration: 0.6,   // Длительность анимации
+                ease: 'power2.out',
+            });
+        });
+    }
+});
+
+  //console.log(allDrawers)
+
+  let lastIntersectedGroup = null;
+
+
+
+// Функция для выдвижения всей группы
+function extendDrawerGroup(group) {
+    group.position.z += 2; // Выдвигаем всю группу по оси Z
+}
+
+// Функция для возврата всей группы
+function retractDrawerGroup(group) {
+    group.position.z -= 2; // Возвращаем всю группу по оси Z
+}
+
+console.log(allDrawers)
+
+
 
 window.addEventListener('click', event =>{
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;

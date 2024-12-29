@@ -15,7 +15,6 @@ export function addDrawer({ cellX, cellY }){
 
     let positionY = cellHeight/3
 
-    
         const frontpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, cellHeight/3, 0.2), textureMaterial)
         const leftpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, cellHeight-0.4/3, depth-0.2), textureMaterial)
         const rightpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, cellHeight-0.4/3, depth-0.2), textureMaterial)
@@ -55,7 +54,6 @@ export function addDrawer({ cellX, cellY }){
         allDrawers[drawerKey] = {group: drawerGroup, frontpanel:frontpanel, leftpanel:leftpanel, rightpanel:rightpanel, bottompanel:bottompanel, backpanel:backpanel, cellX, cellY}
     
         scene.add(drawerGroup);  
-    
 }
 
 export function openAllDrawers(){
