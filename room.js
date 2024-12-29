@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { scene } from './scene.js';
+
 
 
 
@@ -35,6 +35,11 @@ const displacementMap = textureLoader.load('texture/disbriks.jpg');
 // const diffuseMap2 = textureLoader.load('texture/colorwoodfloor.jpg'); // Цвет
 // const normalMap2 = textureLoader.load('texture/normalwoodfloor.jpg'); // Нормали
 // const displacementMap2 = textureLoader.load('texture/diswoodfloor.jpg');
+
+// const diffuseMap = textureLoader.load('texture/colormetal.jpg'); // Цвет
+// const normalMap = textureLoader.load('texture/normalmetal.jpg'); // Нормали
+// const displacementMap = textureLoader.load('texture/dismetal.jpg');
+
 
 
 

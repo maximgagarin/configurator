@@ -3,11 +3,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 export const scene = new THREE.Scene();
 export const axesHelper = new THREE.AxesHelper(30);
-export const light2 = new THREE.AmbientLight('white', 0.1);
+// export const light2 = new THREE.AmbientLight('white', 0.1);
 export const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
 export const renderer = new THREE.WebGLRenderer({ antialias: true });
 const controls = new OrbitControls(camera, renderer.domElement)
 import { floor , wall } from './room';
+import { light, light2 , helper} from './light';
 
 
 renderer.shadowMap.enabled = true; // Включить тени
@@ -21,24 +22,9 @@ export const raycaster = new THREE.Raycaster();
 export const mouse = new THREE.Vector2();
 
 scene.add(floor, wall)
+scene.add(helper, light, light2);
 
 
-const light = new THREE.DirectionalLight(0xffffff, 3);
-light.position.set(10, 20, 5);
-light.castShadow = true;
-light.shadow.mapSize.width = 1024;
-light.shadow.mapSize.height = 1024;
-light.shadow.camera.left = -25;
-light.shadow.camera.right = 25;
-light.shadow.camera.top = 25;
-light.shadow.camera.bottom = -25;
-light.shadow.camera.near = 1;
-light.shadow.camera.far = 50;
-scene.add(light);
-
-
-// const helper = new THREE.CameraHelper(light.shadow.camera);
-// scene.add(helper);
 
 
 const texture = new THREE.TextureLoader().load('texture/wood.jpg')
@@ -63,7 +49,7 @@ const container = document.getElementById('3d-container');
 
 
 export function setup(){
-    scene.add(light2);
+    
     camera.position.set(10, 11, 30);
    
     renderer.setSize(window.innerWidth, window.innerHeight);
