@@ -74,6 +74,10 @@ VerticalPartitionGroup.castShadow = true
 scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 
 function panelBuilder(){
+
+    let positionX = 5
+
+
     let HorisontalPartitionCount = config.HorisontalPartitionCount
     let VerticalPartitionCount = config.VerticalPartitionCount
     const cellWidth = config.cellWidth
@@ -93,13 +97,13 @@ function panelBuilder(){
         new THREE.BoxGeometry(length+0.2, height, 0.05),
         new THREE.MeshStandardMaterial({color: 'white'})
     );
-    paneltop.position.set(length / 2, height, depth / 2);
-    panelbottom.position.set(length / 2, 0, depth / 2);
+    paneltop.position.set(0, height, depth / 2);
+    panelbottom.position.set(0, 0, depth / 2);
     const panelleft = new THREE.Mesh(geometry, textureMaterial);
     const panelright = new THREE.Mesh(geometry, textureMaterial);
-    panelleft.position.set(0, height / 2, depth / 2);
-    panelright.position.set(length, height / 2, depth / 2);
-    panelback.position.set(length/2, height/2, -0.025);
+    panelleft.position.set(-length/2, height / 2, depth / 2);
+    panelright.position.set(length/2, height / 2, depth / 2);
+    panelback.position.set(0, height/2, -0.025);
 
 
     addOutline(panelbottom)
@@ -113,11 +117,13 @@ function panelBuilder(){
     panelright.castShadow = true
     paneltop.castShadow = true
     panelbottom.castShadow = true
+    panelback.castShadow = true
 
     panelleft.receiveShadow = true
     panelright.receiveShadow = true
     paneltop.receiveShadow = true
     panelbottom.receiveShadow = true
+    panelback.receiveShadow = true
 
 
     
@@ -133,7 +139,7 @@ function panelBuilder(){
                 textureMaterial
             );
             addOutline(horizontalPartition)
-            horizontalPartition.position.set(xCenter, yLevel, depth / 2);
+            horizontalPartition.position.set(xCenter-length/2, yLevel, depth / 2);
             HorisontalPartitionGroup.add(horizontalPartition);
         }
     }
@@ -145,7 +151,7 @@ function panelBuilder(){
             textureMaterial
         );
         addOutline(vertPartition)
-        vertPartition.position.set(xPos, height / 2, depth / 2);
+        vertPartition.position.set(xPos-length/2, height / 2, depth / 2);
         VerticalPartitionGroup.add(vertPartition);
     }
     scene.add(panelGroup);
@@ -163,7 +169,7 @@ function panelBuilder(){
             opacity: 0,
           })
         );
-        transparentCube.position.set((i + 0.5) * cellWidth, (j + 0.5) * cellHeight, depth/2);
+        transparentCube.position.set(((i + 0.5) * cellWidth)-length/2, (j + 0.5) * cellHeight, depth/2);
         CellGroup.add(transparentCube);
       }
     }
@@ -277,6 +283,7 @@ window.addEventListener('click', event =>{
     const intersects = raycaster.intersectObjects(CellGroup.children);
     if (intersects.length > 0) {
         const intersected = intersects[0];
+       
         cellInfo = getCellInfo(intersected,   length , height)  
          
         if (cellInfo) {
