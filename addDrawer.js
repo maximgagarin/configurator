@@ -29,7 +29,7 @@ export function addDrawer({ cellX, cellY, numDrawers = 3}) {
         let positionY = (cellY + 0.5) * cellHeight + (i - (numDrawers - 1) / 2) * drawerHeight;
         const Group = new THREE.Group()
         // Создаем панели для ящика
-        const frontpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, drawerHeight, 0.2), textureMaterial);
+        const frontpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, drawerHeight, 0.1), textureMaterial);
         const leftpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, (drawerHeight - 0.1)*0.9, depth - 0.2), textureMaterial);
         const rightpanel = new THREE.Mesh(new THREE.BoxGeometry(0.2, (drawerHeight - 0.1)*0.9, depth - 0.2), textureMaterial);
         const bottompanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth - 0.4, 0.1, depth - 0.2), textureMaterial);
@@ -42,7 +42,7 @@ export function addDrawer({ cellX, cellY, numDrawers = 3}) {
         addOutline(backpanel)
 
      
-        frontpanel.position.set((cellX + 0.5) * cellWidth, positionY, depth);
+        frontpanel.position.set((cellX + 0.5) * cellWidth, positionY, depth-0.1);
       
         leftpanel.position.set(cellX * cellWidth + 0.2, positionY, depth / 2);
       

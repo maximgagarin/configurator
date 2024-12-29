@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { doors } from "./scene";
 import { config } from "./config";
 import { textureMaterial , scene} from './scene';
+import { addOutline } from './addOutline';
 
 export function addDoor({ cellX, cellY }){  
     const cellWidth = config.cellWidth
@@ -12,8 +13,8 @@ export function addDoor({ cellX, cellY }){
         console.log('Door already exists at:', doorKey);
         return;
     }
-    const door = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, cellHeight, 0.2), textureMaterial)
-    //addOutline(door)
+    const door = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, cellHeight, 0.1), textureMaterial)
+    addOutline(door)
     door.position.set(
         (cellX + 0.5) * cellWidth,
         (cellY + 0.5) * cellHeight,

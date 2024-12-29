@@ -158,7 +158,7 @@ function panelBuilder(){
         const transparentCube = new THREE.Mesh(
           new THREE.BoxGeometry(cellWidth, cellHeight, depth),
           new THREE.MeshBasicMaterial({
-            color: 'green',
+            color: 'white',
             transparent: true,
             opacity: 0,
           })
@@ -217,7 +217,7 @@ window.addEventListener('mousemove', (event ) => {
   // Если есть пересечение, изменяем параметры пересекаемого объекта
   if (intersects.length > 0) {
     const intersected = intersects[0].object;
-    intersected.material.color.set('green');
+    intersected.material.color.set('white');
     intersected.material.opacity = 0.2;
   }
 });
@@ -235,7 +235,7 @@ window.addEventListener('mousemove', (event) => {
         const parentGroup = intersected.parent; // Находим родительскую группу
         gsap.to(parentGroup.position, {
             z: config.depth / 2, // Открываем ящик вперед
-            duration: 0.6,      // Длительность анимации
+            duration: 0.8,      // Длительность анимации
             ease: 'power2.out', // Плавность
         });
     } else {
@@ -243,7 +243,7 @@ window.addEventListener('mousemove', (event) => {
         drawerGroup.children.forEach((group) => {
             gsap.to(group.position, {
                 z: 0,            // Возвращаем на место
-                duration: 0.6,   // Длительность анимации
+                duration: 0.8,   // Длительность анимации
                 ease: 'power2.out',
             });
         });

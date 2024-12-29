@@ -9,7 +9,7 @@ export const addOutline = (mesh) => {
     // Создаем геометрию для границ
     const edges = new THREE.EdgesGeometry(mesh.geometry);
     // Создаем линии для отображения
-    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 'grey' }));
+    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 'black' }));
 
     line.raycast = () => {};
     
