@@ -3,26 +3,26 @@ import { doors } from "./scene";
 import { config } from "./config";
 import { textureMaterial , scene} from './scene';
 import { addOutline } from './addOutline';
+import { allcells } from './scene';
 
-export function addDoor({ cellX, cellY }){  
+export function addDoor(saveNumberOfCell){  
     const cellWidth = config.cellWidth
     const cellHeight = config.cellHeight;
     const depth = config.depth
-    const doorKey = `${cellX}-${cellY}`;
-    if (doors[doorKey]) {
-        console.log('Door already exists at:', doorKey);
-        return;
-    }
+    let x = allcells[saveNumberOfCell].xp
+    let y = allcells[saveNumberOfCell].yp
+//  
+    // if (doors[saveNumberOfCell]) {
+    //     console.log('Door already exists at:', doorKey);
+    //     return;
+    // }
     const door = new THREE.Mesh(new THREE.BoxGeometry(cellWidth, cellHeight, 0.1), textureMaterial)
     addOutline(door)
-    door.position.set(
-        (cellX + 0.5) * cellWidth,
-        (cellY + 0.5) * cellHeight,
-        depth
-    );
+    door.position.set(x, y ,depth);
     scene.add(door);
-    doors[doorKey] = { mesh: door, cellX, cellY }; // Сохраняем дверь
-   // console.log(doors)
+    
+    doors.push({ NumberOfCell:saveNumberOfCell, mesh: door }); // Сохраняем дверь
+  
 }
 
 export function updateDoors() {
@@ -30,14 +30,16 @@ export function updateDoors() {
     const cellWidth = config.cellWidth
     const cellHeight = config.cellHeight;
 
-    for (const doorKey in doors) {
-        const { mesh, cellX, cellY } = doors[doorKey];
+    for (const doorKey of doors) {
+        let numbercell = doorKey.NumberOfCell;
+        const mesh = doorKey.mesh;
         mesh.geometry.dispose(); // Удаляем старую геометрию
         mesh.geometry = new THREE.BoxGeometry(cellWidth , cellHeight , 0.2); // Новая геометрия
         // Пересчитываем новую позицию двери
         mesh.position.set(
-            (cellX + 0.5) * cellWidth,
-            (cellY + 0.5) * cellHeight,
+            allcells[numbercell].xp,
+            allcells[numbercell].yp,
+           
             depth
         );
     }
@@ -46,7 +48,7 @@ export function updateDoors() {
 export function openAllDoors() {
     let newWidthCell = config.cellWidth
     for (const doorKey in doors) {
-        const { mesh, cellX, cellY } = doors[doorKey];
+        const { mesh} = doors[doorKey];
         let posY = mesh.position.y
         let posX = mesh.position.x
         let posZ = mesh.position.z

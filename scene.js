@@ -16,8 +16,9 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0xffffff, 1);
 
 
-export let allDrawers = {}
-export const doors = {}
+export let allDrawers = []
+export const doors = []
+export let allcells = []
 export const raycaster = new THREE.Raycaster();
 export const mouse = new THREE.Vector2();
 

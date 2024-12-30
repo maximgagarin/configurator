@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse, doors ,allDrawers, drawerGroup} from './scene.js'
+import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse, doors ,allDrawers, drawerGroup, allcells} from './scene.js'
 
 import { getCellInfo } from './getCellInfo.js';
 import { addOutline } from './addOutline.js';
@@ -11,6 +11,8 @@ import { addDoor, updateDoors , openAllDoors} from './doors.js';
 import { selectVal } from './controls.js';
 import { searchObjectByCellInfo } from './funk.js';
 import { gsap } from 'gsap';
+
+
 
 
 
@@ -67,17 +69,20 @@ let doorsGroup = new THREE.Group();
 let HorisontalPartitionGroup = new THREE.Group(); 
 let VerticalPartitionGroup = new THREE.Group(); 
 
+let cellWidth = length / VerticalPartitionCount;
+let cellHeight = height / HorisontalPartitionCount;
+config.cellWidth = cellWidth
+config.cellHeight = cellHeight
+
 
 HorisontalPartitionGroup.castShadow = true
 VerticalPartitionGroup.castShadow = true
 
 scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 
+
+
 function panelBuilder(){
-
-    let positionX = 5
-
-
     let HorisontalPartitionCount = config.HorisontalPartitionCount
     let VerticalPartitionCount = config.VerticalPartitionCount
     const cellWidth = config.cellWidth
@@ -170,6 +175,11 @@ function panelBuilder(){
           })
         );
         transparentCube.position.set(((i + 0.5) * cellWidth)-length/2, (j + 0.5) * cellHeight, depth/2);
+        let xp=((i + 0.5) * cellWidth)-length/2
+        let yp = (j + 0.5) * cellHeight
+        let zp = depth/2
+      
+        allcells.push({xp, yp ,zp})
         CellGroup.add(transparentCube);
       }
     }
@@ -179,6 +189,8 @@ function panelBuilder(){
   
 }
 
+
+
 function onInputChange() {
     length = parseFloat(lengthInput.value);
     height = parseFloat(heightInput.value);
@@ -187,8 +199,8 @@ function onInputChange() {
     HorisontalPartitionCount = parseFloat(horisontalCountInput.value);
     VerticalPartitionCount = parseFloat(verticalCountInput.value);
 
-    const cellWidth = length / VerticalPartitionCount;
-    const cellHeight = height / HorisontalPartitionCount;
+    cellWidth = length / VerticalPartitionCount;
+    cellHeight = height / HorisontalPartitionCount;
 
     config.length = length
     config.height = height
@@ -198,10 +210,17 @@ function onInputChange() {
     config.cellWidth = cellWidth
     config.cellHeight = cellHeight
 
+    allcells.length=0
+    
+
     panelBuilder( )
+
+    //console.log(allcells)
 
     const target = new THREE.Vector3(7, height/2, 5);
     controls.target.copy(target); //камера смотрит на target
+
+   
 }
 
 let cellInfo
@@ -242,15 +261,15 @@ window.addEventListener('mousemove', (event) => {
         gsap.to(parentGroup.position, {
             z: config.depth / 2, // Открываем ящик вперед
             duration: 0.8,      // Длительность анимации
-            ease: 'power2.out', // Плавность
+            ease: 'power2.inout', // Плавность
         });
     } else {
         // Возвращаем панели в исходное положение
         drawerGroup.children.forEach((group) => {
             gsap.to(group.position, {
                 z: 0,            // Возвращаем на место
-                duration: 0.8,   // Длительность анимации
-                ease: 'power2.out',
+                duration: 2,   // Длительность анимации
+                ease: 'power2.inout',
             });
         });
     }
@@ -272,7 +291,7 @@ function retractDrawerGroup(group) {
     group.position.z -= 2; // Возвращаем всю группу по оси Z
 }
 
-console.log(allDrawers)
+//console.log(allDrawers)
 
 
 
@@ -283,13 +302,27 @@ window.addEventListener('click', event =>{
     const intersects = raycaster.intersectObjects(CellGroup.children);
     if (intersects.length > 0) {
         const intersected = intersects[0];
+        let x = intersected.object.position.x
+        let y = intersected.object.position.y
+        let saveNumberOfCell 
+        allcells.forEach((item, index)=>{
+            if(item.xp == x && item.yp == y ){
+                saveNumberOfCell = index
+            }
+        })
+
+      
+
+        
+
+        addDrawer(saveNumberOfCell,4)
        
-        cellInfo = getCellInfo(intersected,   length , height)  
+      //  cellInfo = getCellInfo(intersected,   length , height)  
          
-        if (cellInfo) {
-           searchObjectByCellInfo(cellInfo)
-          modalInstance.show() 
-        }
+        // if (cellInfo) {
+        //    searchObjectByCellInfo(cellInfo)
+        //   modalInstance.show() 
+        // }
     } else {
        // console.log('123');
     }
@@ -318,6 +351,7 @@ function addToCell() {
               scene.remove(existingDoor.mesh); // Удаляем дверь
               delete doors[Key]; // Удаляем дверь из объекта doors
           }
+          debugger
           addDrawer(cellInfo); // Добавляем ящик
           break;
 
@@ -339,7 +373,42 @@ function addToCell() {
   }
 }
 
+console.log(config)
+
 onInputChange()
+
+let configuration = {
+    cellsDrawers: [
+        { cell: 0, numDrawers: 3 },
+        { cell: 1, numDrawers: 3 },
+        { cell: 2, numDrawers: 2 },
+        { cell: 3, numDrawers: 4 },
+    ],
+    cellsDoors: [
+        { cell: 4 },
+    ],
+
+    addDrawers:function(){
+        this.cellsDrawers.forEach(item => {
+            addDrawer( item.cell,  item.numDrawers );
+        });
+    },
+    addDoors:function(){
+        this.cellsDoors.forEach(item => {
+            addDoor( item.cell );
+        });
+    }
+};
+
+
+//configuration.addDrawers()
+//configuration.addDoors()
+
+
+// // configuration.cells.forEach(item => {
+// //     addDrawer({ cellX: item.cellX, cellY: item.cellY, numDrawers: item.numDrawers });
+// // });
+
 
 function animate() {
     requestAnimationFrame(animate);
