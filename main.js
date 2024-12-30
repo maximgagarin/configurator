@@ -57,7 +57,7 @@ openDoorsDoubleButton.addEventListener('click', () => openAllDoubleDoors());
 const closeDoorsDoubleButton = document.getElementById('closeDoorsDoubleButton');
 closeDoorsDoubleButton.addEventListener('click', () => closeAllDoubleDoors());
 
-const rotateCabinet = document.getElementById('rotateCabinet');
+
 
 
 

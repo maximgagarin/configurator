@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script type="module" crossorigin src="/assets/index-DcLnDgeA.js"></script>
+</head>
+<body>
+  <div class="row">
+    <div class="col-9">
+      <div id="3d-container"></div>
+    </div>
+    <div class="col-2">
+      
+      <label for="length">Длина изделия:</label>
+
+      <input id="length" type="range" min="1" max="25" step="0.1" value="10">
+
+      <label for="height">Высота изделия:</label>
+      <input id="height" type="range" min="1" max="25" step="0.1" value="8">
+
+      <label for="depth">Глубина </label>
+      <input id="depth" type="range" min="1" max="10" step="0.1" value="2">
+
+      <label for="depth">гориз перегородки </label>
+      <input id="horisontalCountInput" type="range" min="1" max="10" step="1" value="4">
+
+      <label for="depth">верт перегородки </label>
+      <input id="verticalCountInput" type="range" min="1" max="10" step="1" value="4">
+
+      <button id="openDoorsButton">Open All Doors</button>
+      <button id="openDoorsDoubleButton">Open Dubble Doors</button>
+      <button id="closeDoorsDoubleButton">close Dubble Doors</button>
+      <button id="openDrawersButton">Open All Drawers</button>
+      <button id="closeDrawersButton">Close All Drawers</button>
+     
+
+
+     
+    </div> 
+  </div>
+<!-- Modal -->
+<div class="modal fade modal-right" id="Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <select class="form-select" aria-label="Default select example" id="selectCell">
+            <option selected>Open this select menu</option>
+            <option value="1">Дверь</option>
+            <option value="2">Ящик</option>
+            <option value="3">2 Ящика</option>
+            <option value="4">Пусто</option>
+
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="ModalButton" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</body>
+</html>
+
+<style>
+  label{
+    color: aqua;
+  }
+
+  .modal.modal-right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+  overflow-y: auto;
+}
+
+.modal.modal-right .modal-dialog {
+  margin: 0;
+  max-width: 400px; /* Ширина модального окна */
+  height: 100%;
+}
+</style>
