@@ -7,7 +7,7 @@ import { addOutline } from './addOutline.js';
 import { modalInstance } from './controls.js';
 import { config } from './config.js';
 import { addDrawer , openAllDrawers, updateDrawers, closeAllDrawers, allPanels } from './addDrawer.js';
-import { addDoor, updateDoors , openAllDoors} from './doors.js';
+import { addDoor, updateDoors , openAllDoors, addDoorDouble, openAllDoubleDoors, closeAllDoubleDoors} from './doors.js';
 import { selectVal } from './controls.js';
 import { searchObjectByCellInfo } from './funk.js';
 import { gsap } from 'gsap';
@@ -43,8 +43,21 @@ openDoorsButton.addEventListener('click', () => openAllDoors());
 const openDrawersButton = document.getElementById('openDrawersButton');
 openDrawersButton.addEventListener('click', openAllDrawers);
 
+
+
+
 const closeDrawersButton = document.getElementById('closeDrawersButton');
 closeDrawersButton.addEventListener('click', closeAllDrawers);
+
+
+const openDoorsDoubleButton = document.getElementById('openDoorsDoubleButton');
+openDoorsDoubleButton.addEventListener('click', () => openAllDoubleDoors());
+
+
+const closeDoorsDoubleButton = document.getElementById('closeDoorsDoubleButton');
+closeDoorsDoubleButton.addEventListener('click', () => closeAllDoubleDoors());
+
+const rotateCabinet = document.getElementById('rotateCabinet');
 
 
 
@@ -275,6 +288,9 @@ window.addEventListener('mousemove', (event) => {
     }
 });
 
+
+
+
   //console.log(allDrawers)
 
   let lastIntersectedGroup = null;
@@ -315,7 +331,7 @@ window.addEventListener('click', event =>{
 
         
 
-        addDrawer(saveNumberOfCell,4)
+        addDoorDouble(saveNumberOfCell,4)
        
       //  cellInfo = getCellInfo(intersected,   length , height)  
          

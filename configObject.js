@@ -1,8 +1,8 @@
 export let configurationObject = {
     length:null,
     height:null,
-    VerticalPartitionsCount:null,
-    HorisontalPartitionsCount:null,
+    VerticalPartitionCount:null,
+    HorisontalPartitionCount:null,
     cellsDrawers: [
      
     ],
