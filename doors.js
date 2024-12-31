@@ -4,6 +4,7 @@ import { config } from "./config";
 import { textureMaterial , scene} from './scene';
 import { addOutline } from './addOutline';
 import { allcells } from './scene';
+import { cells } from './cells';
 
 export function addDoor(saveNumberOfCell){  
     const cellWidth = config.cellWidth
@@ -21,6 +22,8 @@ export function addDoor(saveNumberOfCell){
     door.position.set(x, y ,depth);
     scene.add(door);
     doors.push({ NumberOfCell:saveNumberOfCell, mesh: door }); // Сохраняем дверь
+    cells.push({Number: saveNumberOfCell, type:"door"})
+    //console.log(cells)
 }
 
 export function addDoorDouble(saveNumberOfCell){  

@@ -2,15 +2,17 @@ import * as THREE from 'three'
 
 import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse, doors ,allDrawers, drawerGroup, allcells} from './scene.js'
 
-import { getCellInfo } from './getCellInfo.js';
+
 import { addOutline } from './addOutline.js';
 import { modalInstance } from './controls.js';
 import { config } from './config.js';
 import { addDrawer , openAllDrawers, updateDrawers, closeAllDrawers, allPanels } from './addDrawer.js';
 import { addDoor, updateDoors , openAllDoors, addDoorDouble, openAllDoubleDoors, closeAllDoubleDoors} from './doors.js';
 import { selectVal } from './controls.js';
-import { searchObjectByCellInfo } from './funk.js';
+import { searchObjectByCellInfo } from './searchObjectByCell.js';
+
 import { gsap } from 'gsap';
+import { cells } from './cells.js';
 
 
 const controls = setup()
@@ -23,7 +25,6 @@ const lengthInput = document.getElementById('length');
 const heightInput = document.getElementById('height');
 const depthInput = document.getElementById('depth');
 const modalButton = document.getElementById('ModalButton');
-
 
 
 lengthInput.addEventListener('input', onInputChange);
@@ -40,9 +41,6 @@ openDoorsButton.addEventListener('click', () => openAllDoors());
 const openDrawersButton = document.getElementById('openDrawersButton');
 openDrawersButton.addEventListener('click', openAllDrawers);
 
-
-
-
 const closeDrawersButton = document.getElementById('closeDrawersButton');
 closeDrawersButton.addEventListener('click', closeAllDrawers);
 
@@ -53,10 +51,6 @@ openDoorsDoubleButton.addEventListener('click', () => openAllDoubleDoors());
 
 const closeDoorsDoubleButton = document.getElementById('closeDoorsDoubleButton');
 closeDoorsDoubleButton.addEventListener('click', () => closeAllDoubleDoors());
-
-
-
-
 
 
 
@@ -74,7 +68,6 @@ scene.add(CellGroup);
 let panelGroup = new THREE.Group(); 
 
 
-
 let doorsGroup = new THREE.Group(); 
 let HorisontalPartitionGroup = new THREE.Group(); 
 let VerticalPartitionGroup = new THREE.Group(); 
@@ -89,7 +82,6 @@ HorisontalPartitionGroup.castShadow = true
 VerticalPartitionGroup.castShadow = true
 
 scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
-
 
 
 function panelBuilder(){
@@ -200,7 +192,6 @@ function panelBuilder(){
 }
 
 
-
 function onInputChange() {
     length = parseFloat(lengthInput.value);
     height = parseFloat(heightInput.value);
@@ -225,7 +216,7 @@ function onInputChange() {
 
     panelBuilder( )
 
-    //console.log(allcells)
+    console.log(allcells)
 
     const target = new THREE.Vector3(7, height/2, 5);
     controls.target.copy(target); //камера смотрит на target
@@ -258,6 +249,7 @@ window.addEventListener('mousemove', (event ) => {
 });
 
 
+
 window.addEventListener('mousemove', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -285,28 +277,7 @@ window.addEventListener('mousemove', (event) => {
     }
 });
 
-
-
-
-  //console.log(allDrawers)
-
-  let lastIntersectedGroup = null;
-
-
-
-// Функция для выдвижения всей группы
-function extendDrawerGroup(group) {
-    group.position.z += 2; // Выдвигаем всю группу по оси Z
-}
-
-// Функция для возврата всей группы
-function retractDrawerGroup(group) {
-    group.position.z -= 2; // Возвращаем всю группу по оси Z
-}
-
-//console.log(allDrawers)
-
-
+let saveNumberOfCell
 
 window.addEventListener('click', event =>{
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -317,25 +288,22 @@ window.addEventListener('click', event =>{
         const intersected = intersects[0];
         let x = intersected.object.position.x
         let y = intersected.object.position.y
-        let saveNumberOfCell 
+       
         allcells.forEach((item, index)=>{
             if(item.xp == x && item.yp == y ){
                 saveNumberOfCell = index
             }
         })
 
-      
-
-        
-
-        addDrawer(saveNumberOfCell,4)
+      //  addDrawer(saveNumberOfCell,4)
        
-      //  cellInfo = getCellInfo(intersected,   length , height)  
+      
          
-        // if (cellInfo) {
-        //    searchObjectByCellInfo(cellInfo)
-        //   modalInstance.show() 
-        // }
+        
+           searchObjectByCellInfo(saveNumberOfCell)
+           modalInstance.show();
+       
+        
     } else {
        // console.log('123');
     }
@@ -344,44 +312,36 @@ window.addEventListener('click', event =>{
 
 function addToCell() {
   let selectValue = parseInt(selectVal.value); 
-  const Key = `${cellInfo.cellX}-${cellInfo.cellY}`;
+  //const Key = `${cellInfo.cellX}-${cellInfo.cellY}`;
 
   switch (selectValue) {
       case 1: // Добавляем дверь
           modalInstance.hide();
-          const existingDrawer = allDrawers[Key]; // Проверяем, есть ли ящик в этой ячейке
-          if (existingDrawer) {
-              scene.remove(existingDrawer.group); // Удаляем ящик
-              delete allDrawers[Key]; // Удаляем ящик из объекта allDrawers
-          }
-          addDoor(cellInfo); // Добавляем дверь
+          const item1 = allDrawers.find(cell=> cell.NumberOfCell === saveNumberOfCell)?.group
+          scene.remove(item1); // Удаляем ящик
+          addDoor(saveNumberOfCell); // Добавляем дверь
+          console.log(doors)
           break;
+     
 
       case 2: // Добавляем ящик
-          modalInstance.hide();
-          const existingDoor = doors[Key]; // Проверяем, есть ли дверь в этой ячейке
-          if (existingDoor) {
-              scene.remove(existingDoor.mesh); // Удаляем дверь
-              delete doors[Key]; // Удаляем дверь из объекта doors
-          }
-          debugger
-          addDrawer(cellInfo); // Добавляем ящик
+        modalInstance.hide();
+        let item2
+        doors.forEach((cell, index) => {
+            if (cell.NumberOfCell === saveNumberOfCell) {
+                scene.remove(cell.mesh);
+                doors.splice(index, 1); // Удаляем объект из массива
+            }
+        });
+        
+        console.log(doors)
+          addDrawer(saveNumberOfCell, 3); // Добавляем ящик
           break;
 
       case 4: // Удаляем ящик и/или дверь
           modalInstance.hide();
-          const drawer = allDrawers[Key];
-          const door = doors[Key];
+        const item = doors.find(cell=> cell.NumberOfCell === saveNumberOfCell)?.type;
 
-          if (drawer) {
-              scene.remove(drawer.group); // Удаляем ящик
-              delete allDrawers[Key]; // Удаляем ящик из объекта allDrawers
-          }
-
-          if (door) {
-              scene.remove(door.mesh); // Удаляем дверь
-              delete doors[Key]; // Удаляем дверь из объекта doors
-          }
           break;
   }
 }

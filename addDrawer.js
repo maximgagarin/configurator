@@ -4,6 +4,7 @@ import { textureMaterial } from './scene';
 import { allDrawers ,scene} from './scene';
 import { addOutline } from './addOutline';
 import { drawerGroup ,allcells } from './scene';
+import { cells } from './cells';
 
 
 export const allPanels = []; // Массив всех панелей
@@ -27,13 +28,13 @@ export function addDrawer(saveNumberOfCell, numDrawers) {
     const panels = [];
     const Group = new THREE.Group(); // Создание группы для ящиков
 
-    const drawerHeight = cellHeight / numDrawers;
+    const drawerHeight = (cellHeight / numDrawers)-0.02;
 
     for (let i = 0; i < numDrawers; i++) {
         const positionY = cellY + (i - (numDrawers - 1) / 2) * drawerHeight;
 
         // Создаём панели
-        const frontpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth-0.05, drawerHeight, 0.1), textureMaterial);
+        const frontpanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth-0.1, drawerHeight, 0.1), textureMaterial);
         const leftpanel = new THREE.Mesh(new THREE.BoxGeometry(0.1, (drawerHeight - 0.1) * 0.9, depth - 0.2), textureMaterial);
         const rightpanel = new THREE.Mesh(new THREE.BoxGeometry(0.1, (drawerHeight - 0.1) * 0.9, depth - 0.2), textureMaterial);
         const bottompanel = new THREE.Mesh(new THREE.BoxGeometry(cellWidth - 0.4, 0.1, depth - 0.2), textureMaterial);
@@ -66,7 +67,10 @@ export function addDrawer(saveNumberOfCell, numDrawers) {
     scene.add(drawerGroup); // Добавляем основную группу в сцену
 
     // Добавляем данные в массив allDrawers
-    allDrawers.push({ NumberOfCell: saveNumberOfCell, panels: panels, group: Group });
+    allDrawers.push({ NumberOfCell: saveNumberOfCell, panels: panels, group: drawerGroup });
+
+    cells.push({Number: saveNumberOfCell, type:"drawer"})
+    console.log(cells)
 }
 
 
@@ -94,21 +98,21 @@ export function updateDrawers() {
     
             // Обновление передней панели
             frontpanel.geometry.dispose();
-            frontpanel.geometry = new THREE.BoxGeometry(cellWidth, drawerHeight, 0.1);
-            frontpanel.position.set(allcells[numbercell].xp, positionY, depth);
+            frontpanel.geometry = new THREE.BoxGeometry(cellWidth-0.1, drawerHeight, 0.1);
+            frontpanel.position.set(allcells[numbercell].xp, positionY, depth-0.1);
             addOutline(frontpanel)
     
             
             // Обновляем левую панель
             leftpanel.geometry.dispose();
             leftpanel.geometry = new THREE.BoxGeometry(0.1, drawerHeight - 0.1, depth - 0.2);
-            leftpanel.position.set(allcells[numbercell].xp-cellWidth/2, positionY, depth / 2);
+            leftpanel.position.set((allcells[numbercell].xp-cellWidth/2)+0.1, positionY, depth / 2);
             addOutline(leftpanel)
 
             // Обновляем правую панель
             rightpanel.geometry.dispose();
             rightpanel.geometry = new THREE.BoxGeometry(0.1, drawerHeight - 0.1, depth - 0.2);
-            rightpanel.position.set(allcells[numbercell].xp+cellWidth/2, positionY, depth / 2);
+            rightpanel.position.set((allcells[numbercell].xp+cellWidth/2)-0.1, positionY, depth / 2);
             addOutline(rightpanel)
 
             // Обновляем нижнюю панель
