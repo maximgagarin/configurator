@@ -13,9 +13,6 @@ import { searchObjectByCellInfo } from './funk.js';
 import { gsap } from 'gsap';
 
 
-
-
-
 const controls = setup()
 const canvas = renderer.domElement; 
 
@@ -331,7 +328,7 @@ window.addEventListener('click', event =>{
 
         
 
-        addDoorDouble(saveNumberOfCell,4)
+        addDrawer(saveNumberOfCell,4)
        
       //  cellInfo = getCellInfo(intersected,   length , height)  
          
