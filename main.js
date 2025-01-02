@@ -7,7 +7,7 @@ import { addOutline } from './addOutline.js';
 import { modalInstance } from './controls.js';
 import { config } from './config.js';
 import { addDrawer , openAllDrawers, updateDrawers, closeAllDrawers, allPanels } from './addDrawer.js';
-import { addDoor, updateDoors , openAllDoors, addDoorDouble, openAllDoubleDoors, closeAllDoubleDoors} from './doors.js';
+import { addDoor, updateDoors , openAllDoors, closeAllDoors} from './doors.js';
 import { selectVal } from './controls.js';
 import { searchObjectByCellInfo } from './searchObjectByCell.js';
 
@@ -44,13 +44,16 @@ openDrawersButton.addEventListener('click', openAllDrawers);
 const closeDrawersButton = document.getElementById('closeDrawersButton');
 closeDrawersButton.addEventListener('click', closeAllDrawers);
 
+const closeDoorsButton = document.getElementById('closeDoorsButton');
+closeDoorsButton.addEventListener('click', () => closeAllDoors());
 
-const openDoorsDoubleButton = document.getElementById('openDoorsDoubleButton');
-openDoorsDoubleButton.addEventListener('click', () => openAllDoubleDoors());
+
+// const openDoorsDoubleButton = document.getElementById('openDoorsDoubleButton');
+// openDoorsDoubleButton.addEventListener('click', () => openAllDoubleDoors());
 
 
-const closeDoorsDoubleButton = document.getElementById('closeDoorsDoubleButton');
-closeDoorsDoubleButton.addEventListener('click', () => closeAllDoubleDoors());
+// const closeDoorsDoubleButton = document.getElementById('closeDoorsDoubleButton');
+// closeDoorsDoubleButton.addEventListener('click', () => closeAllDoubleDoors());
 
 
 
@@ -277,6 +280,24 @@ window.addEventListener('mousemove', (event) => {
     }
 });
 
+// window.addEventListener('mousemove', (event) => {
+//     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+//     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+//     raycaster.setFromCamera(mouse, camera);
+//     const intersects = raycaster.intersectObjects(doorsToOpen); // Проверяем панели
+
+//     if (intersects.length > 0) {
+//         const intersected = intersects[0].object;
+//         openAllDoubleDoors()
+//      //   const parentGroup = intersected.parent; // Находим родительскую группу
+     
+//     } else {
+//         // Возвращаем панели в исходное положение
+    
+//     }
+// });
+
 let saveNumberOfCell
 
 window.addEventListener('click', event =>{
@@ -294,12 +315,6 @@ window.addEventListener('click', event =>{
                 saveNumberOfCell = index
             }
         })
-
-      //  addDrawer(saveNumberOfCell,4)
-       
-      
-         
-        
            searchObjectByCellInfo(saveNumberOfCell)
            modalInstance.show();
        
@@ -346,32 +361,36 @@ function addToCell() {
   }
 }
 
-console.log(config)
+//console.log(config)
+
+
 
 onInputChange()
 
-let configuration = {
-    cellsDrawers: [
-        { cell: 0, numDrawers: 3 },
-        { cell: 1, numDrawers: 3 },
-        { cell: 2, numDrawers: 2 },
-        { cell: 3, numDrawers: 4 },
-    ],
-    cellsDoors: [
-        { cell: 4 },
-    ],
 
-    addDrawers:function(){
-        this.cellsDrawers.forEach(item => {
-            addDrawer( item.cell,  item.numDrawers );
-        });
-    },
-    addDoors:function(){
-        this.cellsDoors.forEach(item => {
-            addDoor( item.cell );
-        });
-    }
-};
+
+// let configuration = {
+//     cellsDrawers: [
+//         { cell: 0, numDrawers: 3 },
+//         { cell: 1, numDrawers: 3 },
+//         { cell: 2, numDrawers: 2 },
+//         { cell: 3, numDrawers: 4 },
+//     ],
+//     cellsDoors: [
+//         { cell: 4 },
+//     ],
+
+//     addDrawers:function(){
+//         this.cellsDrawers.forEach(item => {
+//             addDrawer( item.cell,  item.numDrawers );
+//         });
+//     },
+//     addDoors:function(){
+//         this.cellsDoors.forEach(item => {
+//             addDoor( item.cell );
+//         });
+//     }
+// };
 
 
 //configuration.addDrawers()
