@@ -1,3 +1,4 @@
+import { cells } from "./cells";
 
 
 export const config = {
@@ -7,5 +8,7 @@ export const config = {
     HorisontalPartitionCount:4,
     VerticalPartitionCount:4,
     cellWidth: 0,
-    cellHeight: 0
+    cellHeight: 0,
+    cells:[],
+
 }

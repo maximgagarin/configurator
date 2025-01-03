@@ -9,12 +9,11 @@ import { gsap } from 'gsap';
 
 export let doorsToOpen = []
 
-export function addDoor(saveNumberOfCell){  
+export function addDoor(x,y ,lineX, lineY){  
     const cellWidth = config.cellWidth
     const cellHeight = config.cellHeight;
     const depth = config.depth
-    let x = allcells[saveNumberOfCell].xp
-    let y = allcells[saveNumberOfCell].yp
+
 //  
     // if (doors[saveNumberOfCell]) {
     //     console.log('Door already exists at:', doorKey);
@@ -24,45 +23,14 @@ export function addDoor(saveNumberOfCell){
     addOutline(door)
     door.position.set(x, y ,depth);
     scene.add(door);
-    doors.push({ NumberOfCell:saveNumberOfCell, mesh: door, open:false }); // Сохраняем дверь
+    doors.push({ mesh: door, open:false ,  x , y , lineX, lineY}); // Сохраняем дверь
    // cells.push({Number: saveNumberOfCell, type:"door"})
     allcells[saveNumberOfCell].type = 'door'
     allcells2[saveNumberOfCell].type = 'door'
 
 
-    //console.log(allcells2)
+    console.log(doors)
 }
-
-// export function addDoorDouble(saveNumberOfCell){  
-//     debugger
-//     const cellWidth = config.cellWidth
-//     const cellHeight = config.cellHeight;
-//     const depth = config.depth
-//     let x = allcells[saveNumberOfCell].xp
-//     let y = allcells[saveNumberOfCell].yp
-
-//     const doorLeft = new THREE.Mesh(new THREE.BoxGeometry(cellWidth/2, cellHeight, 0.1), textureMaterial)
-//     const doorRight = new THREE.Mesh(new THREE.BoxGeometry(cellWidth/2, cellHeight, 0.1), textureMaterial)
-
-//     addOutline(doorLeft)
-//     addOutline(doorRight)
-
-//     doorLeft.position.set(x-cellWidth/4, y ,depth);
-//     doorRight.position.set(x+cellWidth/4, y ,depth);
-
-//     scene.add(doorLeft, doorRight);
-
-//     doorsToOpen.push(doorLeft, doorRight)
-
-
-
-//     doors.push({ NumberOfCell:saveNumberOfCell, meshLeft: doorLeft, meshRight: doorRight }); // Сохраняем дверь
-// }
-
-
-
-
-
 
 
 
@@ -225,4 +193,31 @@ export function closeAllDoors() {
 
         
 //     }
+// }
+
+
+// export function addDoorDouble(saveNumberOfCell){  
+//     debugger
+//     const cellWidth = config.cellWidth
+//     const cellHeight = config.cellHeight;
+//     const depth = config.depth
+//     let x = allcells[saveNumberOfCell].xp
+//     let y = allcells[saveNumberOfCell].yp
+
+//     const doorLeft = new THREE.Mesh(new THREE.BoxGeometry(cellWidth/2, cellHeight, 0.1), textureMaterial)
+//     const doorRight = new THREE.Mesh(new THREE.BoxGeometry(cellWidth/2, cellHeight, 0.1), textureMaterial)
+
+//     addOutline(doorLeft)
+//     addOutline(doorRight)
+
+//     doorLeft.position.set(x-cellWidth/4, y ,depth);
+//     doorRight.position.set(x+cellWidth/4, y ,depth);
+
+//     scene.add(doorLeft, doorRight);
+
+//     doorsToOpen.push(doorLeft, doorRight)
+
+
+
+//     doors.push({ NumberOfCell:saveNumberOfCell, meshLeft: doorLeft, meshRight: doorRight }); // Сохраняем дверь
 // }

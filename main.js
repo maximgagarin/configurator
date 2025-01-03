@@ -89,7 +89,7 @@ scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 let CellCount = VerticalPartitionCount * HorisontalPartitionCount
 
 for(let i=0 ; i<CellCount; i++){
-    allcells2.push({number:i, xp:null, yp:null, zp:null, type:'' })
+    allcells2.push({number:i, xp:null, yp:null, zp:null, lineX:null, lineY:null,  type:'' })
 }
 
 
@@ -188,6 +188,9 @@ function panelBuilder(){
             opacity: 0,
           })
         );
+        transparentCube.lineX = i
+        transparentCube.lineY = j
+
         transparentCube.position.set(((i + 0.5) * cellWidth)-length/2, (j + 0.5) * cellHeight, depth/2);
         let xp=((i + 0.5) * cellWidth)-length/2
         let yp = (j + 0.5) * cellHeight
@@ -197,6 +200,13 @@ function panelBuilder(){
         allcells2[count].xp=xp
         allcells2[count].yp=yp
         allcells2[count].zp = zp
+        allcells2[count].lineX = i
+        allcells2[count].lineY = j
+
+
+        //config.cells.push({})
+
+
 
 
         CellGroup.add(transparentCube);
@@ -356,14 +366,24 @@ window.addEventListener('click', event =>{
         const intersected = intersects[0];
         let x = intersected.object.position.x
         let y = intersected.object.position.y
+        let lineX = intersected.object.lineX
+        let lineY = intersected.object.lineY
+        addDoor(x, y, lineX ,lineY)
+
+        console.log("Линия X: ", lineX , "Линия Y: ", lineY) 
+
+
+
+
+
        
-        allcells.forEach((item, index)=>{
-            if(item.xp == x && item.yp == y ){
-                saveNumberOfCell = index
-            }
-        })
-           searchObjectByCellInfo(saveNumberOfCell)
-           modalInstance.show();
+        // allcells.forEach((item, index)=>{
+        //     if(item.xp == x && item.yp == y ){
+        //         saveNumberOfCell = index
+        //     }
+        // })
+        //    searchObjectByCellInfo(saveNumberOfCell)
+        //    modalInstance.show();
        
         
     } else {
