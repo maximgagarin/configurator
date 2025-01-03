@@ -128,6 +128,7 @@ function panelBuilder(){
     addOutline(paneltop)
 
     CellGroup.clear()
+    
 
     panelleft.castShadow = true
     panelright.castShadow = true
@@ -232,6 +233,24 @@ function onInputChange() {
     config.cellHeight = cellHeight
 
     allcells.length=0
+
+
+    let oldCells = [...allcells2]
+
+    allcells2.length=0
+
+
+    CellCount = VerticalPartitionCount * HorisontalPartitionCount
+    for (let i = 0; i < CellCount; i++) {
+        const oldCell = oldCells.find(cell => cell.number === i);
+        allcells2.push({
+            number: i,
+            xp: null,
+            yp: null,
+            zp: null,
+            type: oldCell ? oldCell.type : '' // Сохраняем старый тип, если он есть
+        });
+    }
     
 
     panelBuilder( )
