@@ -72,7 +72,7 @@ export function addDrawer(saveNumberOfCell, numDrawers) {
     cells.push({Number: saveNumberOfCell, type:"drawer"})
     allcells2[saveNumberOfCell].type = 'drivers'
     //console.log(cells)
-    console.log(allcells2)
+   // console.log(allcells2)
 }
 
 

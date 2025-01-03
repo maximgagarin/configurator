@@ -48,6 +48,15 @@ const closeDoorsButton = document.getElementById('closeDoorsButton');
 closeDoorsButton.addEventListener('click', () => closeAllDoors());
 
 
+// const openDoorsDoubleButton = document.getElementById('openDoorsDoubleButton');
+// openDoorsDoubleButton.addEventListener('click', () => openAllDoubleDoors());
+
+
+// const closeDoorsDoubleButton = document.getElementById('closeDoorsDoubleButton');
+// closeDoorsDoubleButton.addEventListener('click', () => closeAllDoubleDoors());
+
+
+
 let length = parseFloat(lengthInput.value) || 1;
 let height = parseFloat(heightInput.value) || 1;
 let depth = parseFloat(depthInput.value) || 1;
@@ -82,6 +91,7 @@ let CellCount = VerticalPartitionCount * HorisontalPartitionCount
 for(let i=0 ; i<CellCount; i++){
     allcells2.push({number:i, xp:null, yp:null, zp:null, type:'' })
 }
+
 
 function panelBuilder(){
     let HorisontalPartitionCount = config.HorisontalPartitionCount
@@ -167,8 +177,6 @@ function panelBuilder(){
     let count = 0;
    
 
- 
-
     for (let i = 0; i < VerticalPartitionCount; i++) {
       for (let j = 0; j < HorisontalPartitionCount; j++) {
         const transparentCube = new THREE.Mesh(
@@ -185,13 +193,14 @@ function panelBuilder(){
         let zp = depth/2
       
         allcells.push({xp, yp ,zp})
-       allcells2[count].xp = xp;
-       allcells2[count].yp = yp;
-       allcells2[count].zp = zp;
-       
+        allcells2[count].xp=xp
+        allcells2[count].yp=yp
+        allcells2[count].zp = zp
+
+
         CellGroup.add(transparentCube);
         count++
-       
+        
       }
     }
 
