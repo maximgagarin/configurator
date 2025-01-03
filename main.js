@@ -7,7 +7,7 @@ import { addOutline } from './addOutline.js';
 import { modalInstance } from './controls.js';
 import { config } from './config.js';
 import { addDrawer , openAllDrawers, updateDrawers, closeAllDrawers, allPanels } from './addDrawer.js';
-import { addDoor, updateDoors , openAllDoors, closeAllDoors, doorGroup, AlldoorsGroup} from './doors.js';
+import { addDoor, updateDoors , openAllDoors, closeAllDoors} from './doors.js';
 import { selectVal } from './controls.js';
 import { searchObjectByCellInfo } from './searchObjectByCell.js';
 
@@ -280,34 +280,34 @@ window.addEventListener('mousemove', (event) => {
     }
 });
 
-window.addEventListener('mousemove', (event) => {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+// window.addEventListener('mousemove', (event) => {
+//     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+//     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(AlldoorsGroup.children); // Проверяем панели
+//     raycaster.setFromCamera(mouse, camera);
+//     const intersects = raycaster.intersectObjects(AlldoorsGroup.children); // Проверяем панели
 
-    if (intersects.length > 0) {
-        const RotateGroup = new THREE.Group();
-        const intersected = intersects[0].object;
-        let posY = intersected.position.y
-        let posX = intersected.position.x
-        let posZ = intersected.position.z
-        intersected.position.set((config.cellWidth)/2, 0, 0); 
+//     if (intersects.length > 0) {
+//         const RotateGroup = new THREE.Group();
+//         const intersected = intersects[0].object;
+//         let posY = intersected.position.y
+//         let posX = intersected.position.x
+//         let posZ = intersected.position.z
+//         intersected.position.set((config.cellWidth)/2, 0, 0); 
        
-        scene.add(RotateGroup);
-        RotateGroup.position.set(posX-(config.cellWidth)/2, posY, posZ); 
+//         scene.add(RotateGroup);
+//         RotateGroup.position.set(posX-(config.cellWidth)/2, posY, posZ); 
         
         
         
-        gsap.to(RotateGroup.rotation, { y: THREE.MathUtils.degToRad(-45), duration: 0.5 });
+//         gsap.to(RotateGroup.rotation, { y: THREE.MathUtils.degToRad(-45), duration: 0.5 });
    
      
-    } else {
+//     } else {
         
     
-    }
-});
+//     }
+// });
 
 let saveNumberOfCell
 
