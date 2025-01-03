@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { config } from './config';
-import { textureMaterial } from './scene';
+import { allcells2, textureMaterial } from './scene';
 import { allDrawers ,scene} from './scene';
 import { addOutline } from './addOutline';
 import { drawerGroup ,allcells } from './scene';
@@ -70,7 +70,9 @@ export function addDrawer(saveNumberOfCell, numDrawers) {
     allDrawers.push({ NumberOfCell: saveNumberOfCell, panels: panels, group: drawerGroup });
 
     cells.push({Number: saveNumberOfCell, type:"drawer"})
-    console.log(cells)
+    allcells2[saveNumberOfCell].type = 'drivers'
+    //console.log(cells)
+    console.log(allcells2)
 }
 
 

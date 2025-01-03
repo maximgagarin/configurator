@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse, doors ,allDrawers, drawerGroup, allcells} from './scene.js'
+import{scene,   camera, renderer, setup, textureMaterial, raycaster, mouse, doors ,allDrawers, drawerGroup, allcells, allcells2} from './scene.js'
 
 
 import { addOutline } from './addOutline.js';
@@ -48,15 +48,6 @@ const closeDoorsButton = document.getElementById('closeDoorsButton');
 closeDoorsButton.addEventListener('click', () => closeAllDoors());
 
 
-// const openDoorsDoubleButton = document.getElementById('openDoorsDoubleButton');
-// openDoorsDoubleButton.addEventListener('click', () => openAllDoubleDoors());
-
-
-// const closeDoorsDoubleButton = document.getElementById('closeDoorsDoubleButton');
-// closeDoorsDoubleButton.addEventListener('click', () => closeAllDoubleDoors());
-
-
-
 let length = parseFloat(lengthInput.value) || 1;
 let height = parseFloat(heightInput.value) || 1;
 let depth = parseFloat(depthInput.value) || 1;
@@ -86,6 +77,11 @@ VerticalPartitionGroup.castShadow = true
 
 scene.add(HorisontalPartitionGroup, VerticalPartitionGroup, doorsGroup);
 
+let CellCount = VerticalPartitionCount * HorisontalPartitionCount
+
+for(let i=0 ; i<CellCount; i++){
+    allcells2.push({number:i, xp:null, yp:null, zp:null, type:'' })
+}
 
 function panelBuilder(){
     let HorisontalPartitionCount = config.HorisontalPartitionCount
@@ -168,7 +164,11 @@ function panelBuilder(){
     scene.add(HorisontalPartitionGroup);
     scene.add(VerticalPartitionGroup);
 
-    
+    let count = 0;
+   
+
+ 
+
     for (let i = 0; i < VerticalPartitionCount; i++) {
       for (let j = 0; j < HorisontalPartitionCount; j++) {
         const transparentCube = new THREE.Mesh(
@@ -185,12 +185,20 @@ function panelBuilder(){
         let zp = depth/2
       
         allcells.push({xp, yp ,zp})
+       allcells2[count].xp = xp;
+       allcells2[count].yp = yp;
+       allcells2[count].zp = zp;
+       
         CellGroup.add(transparentCube);
+        count++
+       
       }
     }
 
     updateDoors()
     updateDrawers()
+
+    console.log(allcells2)
   
 }
 

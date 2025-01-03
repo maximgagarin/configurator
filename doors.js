@@ -3,7 +3,7 @@ import { doors } from "./scene";
 import { config } from "./config";
 import { textureMaterial , scene} from './scene';
 import { addOutline } from './addOutline';
-import { allcells } from './scene';
+import { allcells, allcells2 } from './scene';
 import { cells } from './cells';
 import { gsap } from 'gsap';
 
@@ -27,8 +27,10 @@ export function addDoor(saveNumberOfCell){
     doors.push({ NumberOfCell:saveNumberOfCell, mesh: door, open:false }); // Сохраняем дверь
    // cells.push({Number: saveNumberOfCell, type:"door"})
     allcells[saveNumberOfCell].type = 'door'
+    allcells2[saveNumberOfCell].type = 'door'
 
-    console.log(allcells)
+
+    //console.log(allcells2)
 }
 
 // export function addDoorDouble(saveNumberOfCell){  
@@ -76,6 +78,7 @@ export function updateDoors() {
         mesh.geometry.dispose(); // Удаляем старую геометрию
         mesh.geometry = new THREE.BoxGeometry(cellWidth , cellHeight , 0.2); // Новая геометрия
         // Пересчитываем новую позицию двери
+        addOutline(mesh)
         mesh.position.set(
             allcells[numbercell].xp,
             allcells[numbercell].yp,
